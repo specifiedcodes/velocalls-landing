@@ -1,7 +1,7 @@
 "use client";
 
 import { Settings, UsersRound, BarChart3 } from "lucide-react";
-import { motion, useInView } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 const steps = [
@@ -31,36 +31,78 @@ const steps = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const stepVariants = {
-  hidden: { opacity: 0, x: -30 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.6, ease: "easeOut" as const },
-  },
-};
-
-export default function HowItWorksSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+function StepCard({
+  step,
+  index,
+  scrollYProgress,
+}: {
+  step: (typeof steps)[number];
+  index: number;
+  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+}) {
+  const cardX = useTransform(
+    scrollYProgress,
+    [0.1 + index * 0.2, 0.3 + index * 0.2],
+    [-40, 0]
+  );
+  const cardOpacity = useTransform(
+    scrollYProgress,
+    [0.1 + index * 0.2, 0.3 + index * 0.2],
+    [0, 1]
+  );
 
   return (
-    <section id="how-it-works" className="section-padding relative overflow-hidden">
-      {/* Ambient blob */}
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] top-20 -right-48"
-        style={{ background: "var(--blob-secondary)", animationDelay: "-3s" }}
-      />
+    <motion.div
+      style={{ x: cardX, opacity: cardOpacity }}
+      className="relative flex gap-6 md:gap-10 items-start"
+    >
+      {/* Step number on the timeline */}
+      <div className="relative z-10 shrink-0">
+        <div className="hidden md:flex h-16 w-16 items-center justify-center">
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${step.color} shadow-lg`}
+          >
+            <step.icon className="h-6 w-6 text-white" />
+          </div>
+        </div>
+        {/* Mobile icon */}
+        <div className="md:hidden flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg">
+          <step.icon className="h-5 w-5 text-white" />
+        </div>
+      </div>
 
+      {/* Card */}
+      <div className="glass-card p-6 md:p-8 flex-1">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="gradient-text text-3xl font-extrabold md:text-4xl">
+            {step.number}
+          </span>
+          <h3 className="text-xl font-semibold text-foreground">
+            {step.title}
+          </h3>
+        </div>
+        <p className="text-sm leading-relaxed text-muted">
+          {step.description}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function HowItWorksSection() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const lineHeight = useTransform(scrollYProgress, [0.1, 0.8], ["0%", "100%"]);
+
+  return (
+    <section
+      id="how-it-works"
+      ref={sectionRef}
+      className="section-padding relative overflow-hidden"
+    >
       <div className="mx-auto max-w-5xl relative z-10">
         {/* Section Header */}
         <motion.div
@@ -84,56 +126,26 @@ export default function HowItWorksSection() {
         </motion.div>
 
         {/* Vertical Timeline */}
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="relative"
-        >
-          {/* Gradient timeline line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-indigo-500/40 via-violet-500/40 to-cyan-500/40 hidden md:block" />
+        <div className="relative">
+          {/* Scroll-linked gradient timeline line */}
+          <div className="absolute left-8 top-0 bottom-0 w-px hidden md:block overflow-hidden">
+            <motion.div
+              style={{ height: lineHeight }}
+              className="w-full bg-gradient-to-b from-indigo-500/40 via-violet-500/40 to-cyan-500/40"
+            />
+          </div>
 
           <div className="space-y-8 md:space-y-12">
-            {steps.map((step) => (
-              <motion.div
+            {steps.map((step, index) => (
+              <StepCard
                 key={step.number}
-                variants={stepVariants}
-                className="relative flex gap-6 md:gap-10 items-start"
-              >
-                {/* Step number on the timeline */}
-                <div className="relative z-10 shrink-0">
-                  <div className="hidden md:flex h-16 w-16 items-center justify-center">
-                    <div
-                      className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${step.color} shadow-lg`}
-                    >
-                      <step.icon className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-                  {/* Mobile icon */}
-                  <div className="md:hidden flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg">
-                    <step.icon className="h-5 w-5 text-white" />
-                  </div>
-                </div>
-
-                {/* Card */}
-                <div className="glass-card p-6 md:p-8 flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="gradient-text text-3xl font-extrabold md:text-4xl">
-                      {step.number}
-                    </span>
-                    <h3 className="text-xl font-semibold text-foreground">
-                      {step.title}
-                    </h3>
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted">
-                    {step.description}
-                  </p>
-                </div>
-              </motion.div>
+                step={step}
+                index={index}
+                scrollYProgress={scrollYProgress}
+              />
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,14 +1,24 @@
 "use client";
 
 import { ArrowRight, Phone } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { DASHBOARD_URL } from "@/lib/config";
 
 export default function CTABanner() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.95, 1]);
+
   return (
     <section className="section-padding relative">
       <div className="mx-auto max-w-5xl relative z-10">
         <motion.div
+          ref={ref}
+          style={{ scale }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}

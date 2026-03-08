@@ -170,7 +170,7 @@ export default function PricingSection() {
 
                 {/* Price */}
                 <div className="mt-6 mb-6">
-                  <span className={cn("text-4xl font-extrabold text-foreground", plan.highlighted && "gradient-text")}>
+                  <span className={cn("text-4xl font-extrabold", plan.highlighted ? "text-primary" : "text-foreground")}>
                     {plan.price}
                   </span>
                   {plan.period && (

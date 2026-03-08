@@ -82,10 +82,14 @@ function FAQItem({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" as const }}
+            initial={{ height: 0, opacity: 0, scale: 0.97 }}
+            animate={{ height: "auto", opacity: 1, scale: 1 }}
+            exit={{ height: 0, opacity: 0, scale: 0.97 }}
+            transition={{
+              height: { type: "spring", stiffness: 500, damping: 40 },
+              opacity: { duration: 0.25 },
+              scale: { duration: 0.2 },
+            }}
           >
             <div className="px-6 pb-5 text-sm leading-relaxed text-muted pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
               {answer}
@@ -102,12 +106,6 @@ export default function FAQSection() {
 
   return (
     <section id="faq" className="section-padding relative overflow-hidden">
-      {/* Ambient blob */}
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] top-1/3 -left-48"
-        style={{ background: "var(--blob-primary)", animationDelay: "-6s" }}
-      />
-
       <div className="mx-auto max-w-4xl relative z-10">
         {/* Section Header */}
         <motion.div

@@ -8,7 +8,7 @@ import {
   Users,
   ShieldCheck,
 } from "lucide-react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 const features = [
@@ -56,23 +56,27 @@ const features = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-} as const;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const },
-  },
-};
+function BentoCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const cardRef = useRef(null);
+  const isCardInView = useInView(cardRef, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={isCardInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      whileHover={{
+        y: -8,
+        transition: { type: "spring", stiffness: 300, damping: 20 },
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function FeatureIcon({ index }: { index: number }) {
   const Icon = features[index].icon;
@@ -128,27 +132,23 @@ function ComplianceBadges() {
 }
 
 export default function FeaturesSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const headerY = useTransform(scrollYProgress, [0, 0.4], [60, -20]);
 
   return (
-    <section id="features" className="section-padding relative">
+    <section id="features" ref={sectionRef} className="section-padding relative">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial-[at_50%_50%] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
 
-      {/* Ambient blobs */}
-      <div
-        className="ambient-blob animate-blob-drift w-[500px] h-[500px] top-20 -left-64"
-        style={{ background: "var(--blob-primary)" }}
-      />
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] bottom-20 -right-48"
-        style={{ background: "var(--blob-secondary)", animationDelay: "-6s" }}
-      />
-
       <div className="mx-auto max-w-7xl relative z-10">
-        {/* Section Header */}
+        {/* Section Header with scroll-linked parallax */}
         <motion.div
+          style={{ y: headerY }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -166,21 +166,20 @@ export default function FeaturesSection() {
             From intelligent routing to AI-powered analytics, VeloCalls gives
             you the tools to maximize every call.
           </p>
+          {/* Animated gradient underline */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="h-px w-32 mx-auto mt-6 bg-gradient-to-r from-transparent via-primary/50 to-transparent origin-center"
+          />
         </motion.div>
 
         {/* Bento Grid */}
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card 0: Smart Call Routing — col-span-2 horizontal */}
-          <motion.div
-            variants={cardVariants}
-            className="col-span-1 sm:col-span-2"
-          >
+          <BentoCard className="col-span-1 sm:col-span-2">
             <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
               <div className="flex-1">
                 <div
@@ -199,10 +198,10 @@ export default function FeaturesSection() {
                 <RoutingDiagram />
               </div>
             </div>
-          </motion.div>
+          </BentoCard>
 
-          {/* Card 1: Real-Time Bidding — col-span-1 vertical */}
-          <motion.div variants={cardVariants} className="col-span-1">
+          {/* Card 1: Real-Time Bidding - col-span-1 vertical */}
+          <BentoCard className="col-span-1">
             <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[1].gradient} shadow-lg`}
@@ -216,10 +215,10 @@ export default function FeaturesSection() {
                 {features[1].description}
               </p>
             </div>
-          </motion.div>
+          </BentoCard>
 
-          {/* Card 2: AI Intelligence — col-span-1 vertical */}
-          <motion.div variants={cardVariants} className="col-span-1">
+          {/* Card 2: AI Intelligence - col-span-1 vertical */}
+          <BentoCard className="col-span-1">
             <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[2].gradient} shadow-lg`}
@@ -233,13 +232,10 @@ export default function FeaturesSection() {
                 {features[2].description}
               </p>
             </div>
-          </motion.div>
+          </BentoCard>
 
-          {/* Card 3: Multi-Carrier — col-span-2 horizontal */}
-          <motion.div
-            variants={cardVariants}
-            className="col-span-1 sm:col-span-2"
-          >
+          {/* Card 3: Multi-Carrier - col-span-2 horizontal */}
+          <BentoCard className="col-span-1 sm:col-span-2">
             <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
               <div className="flex-1">
                 <div
@@ -258,10 +254,10 @@ export default function FeaturesSection() {
                 <CarrierStatusBars />
               </div>
             </div>
-          </motion.div>
+          </BentoCard>
 
-          {/* Card 4: Publisher Portals — col-span-1 vertical */}
-          <motion.div variants={cardVariants} className="col-span-1">
+          {/* Card 4: Publisher Portals - col-span-1 vertical */}
+          <BentoCard className="col-span-1">
             <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[4].gradient} shadow-lg`}
@@ -275,13 +271,10 @@ export default function FeaturesSection() {
                 {features[4].description}
               </p>
             </div>
-          </motion.div>
+          </BentoCard>
 
-          {/* Card 5: Compliance — col-span-3 full-width banner */}
-          <motion.div
-            variants={cardVariants}
-            className="col-span-1 sm:col-span-2 lg:col-span-3"
-          >
+          {/* Card 5: Compliance - col-span-3 full-width banner */}
+          <BentoCard className="col-span-1 sm:col-span-2 lg:col-span-3">
             <div className="glass-card p-8 h-full flex flex-col items-center text-center">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[5].gradient} shadow-lg`}
@@ -296,8 +289,8 @@ export default function FeaturesSection() {
               </p>
               <ComplianceBadges />
             </div>
-          </motion.div>
-        </motion.div>
+          </BentoCard>
+        </div>
       </div>
     </section>
   );

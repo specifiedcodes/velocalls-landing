@@ -14,43 +14,15 @@
  */
 
 import { Star } from "lucide-react";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { getTestimonials } from "@/lib/testimonials-data";
 
 // Load testimonials from centralized data file
 const testimonials = getTestimonials();
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const },
-  },
-};
-
 export default function TestimonialsSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
     <section className="section-padding relative overflow-hidden">
-      {/* Ambient blob */}
-      <div
-        className="ambient-blob animate-blob-drift w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ background: "var(--blob-secondary)", animationDelay: "-5s" }}
-      />
-
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <motion.div
@@ -73,15 +45,20 @@ export default function TestimonialsSection() {
         </motion.div>
 
         {/* Testimonial Cards */}
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:pb-0"
-        >
-          {testimonials.map((testimonial) => (
-            <motion.div key={testimonial.name} variants={cardVariants} className="snap-center shrink-0 w-[85vw] sm:w-[60vw] md:w-auto">
+        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:pb-0">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={testimonial.name}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{
+                duration: 0.7,
+                delay: index * 0.15,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
+              className="snap-center shrink-0 w-[85vw] sm:w-[60vw] md:w-auto"
+            >
               <div className="glass-card relative p-8 h-full flex flex-col">
                 {/* Decorative quote mark */}
                 <span className="absolute top-4 right-4 text-6xl font-serif text-primary/5 leading-none select-none pointer-events-none">&ldquo;</span>
@@ -117,7 +94,7 @@ export default function TestimonialsSection() {
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
