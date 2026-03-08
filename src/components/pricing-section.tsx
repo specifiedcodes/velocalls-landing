@@ -86,6 +86,9 @@ export default function PricingSection() {
 
   return (
     <section id="pricing" className="section-padding relative overflow-hidden">
+      {/* Dot grid overlay */}
+      <div className="absolute inset-0 bg-dot-grid opacity-20 pointer-events-none" />
+
       {/* Ambient blobs */}
       <div
         className="ambient-blob animate-blob-drift w-[500px] h-[500px] -top-32 -left-48"
@@ -139,7 +142,7 @@ export default function PricingSection() {
                 className={cn(
                   "glass-card relative p-8 flex flex-col",
                   plan.highlighted &&
-                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10"
+                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10 bg-background glow-box"
                 )}
               >
                 {/* Popular Badge */}

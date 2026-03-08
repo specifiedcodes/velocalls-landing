@@ -14,7 +14,20 @@ export default function CTABanner() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [0.95, 1]);
 
   return (
-    <section className="section-padding relative">
+    <section className="section-padding relative overflow-hidden">
+      {/* Dot grid overlay */}
+      <div className="absolute inset-0 bg-dot-grid opacity-20 pointer-events-none" />
+
+      {/* Ambient blobs */}
+      <div
+        className="ambient-blob animate-blob-drift w-[500px] h-[500px] -top-32 -left-40"
+        style={{ background: "var(--blob-primary)", animationDelay: "-2s" }}
+      />
+      <div
+        className="ambient-blob animate-blob-drift w-[400px] h-[400px] -bottom-24 -right-32"
+        style={{ background: "var(--blob-secondary)", animationDelay: "-9s" }}
+      />
+
       <div className="mx-auto max-w-5xl relative z-10">
         <motion.div
           ref={ref}

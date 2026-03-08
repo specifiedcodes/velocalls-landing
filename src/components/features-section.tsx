@@ -8,8 +8,10 @@ import {
   Users,
   ShieldCheck,
 } from "lucide-react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import type { MotionValue } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 const features = [
   {
@@ -56,17 +58,63 @@ const features = [
   },
 ];
 
+/* Scatter starting positions for each card (exploded view) */
+const scatterConfigs = [
+  { x: -80, y: 60, rotate: -4 },  // Card 0: col-span-2, drifts from left
+  { x: 60, y: 80, rotate: 3 },    // Card 1: col-span-1, drifts from right
+  { x: -40, y: 100, rotate: -2 }, // Card 2: col-span-1, drifts from left
+  { x: 80, y: 60, rotate: 4 },    // Card 3: col-span-2, drifts from right
+  { x: -60, y: 80, rotate: -3 },  // Card 4: col-span-1, drifts from left
+  { x: 0, y: 100, rotate: 0 },    // Card 5: col-span-3, rises from below
+];
 
-function BentoCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  const cardRef = useRef(null);
-  const isCardInView = useInView(cardRef, { once: true, margin: "-60px" });
+function BentoCard({
+  children,
+  className,
+  index,
+  scrollYProgress,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  index: number;
+  scrollYProgress: MotionValue<number>;
+}) {
+  const config = scatterConfigs[index];
+
+  /* Stagger the assembly: card 0 assembles first, card 5 last.
+     Each card animates within a portion of the total scroll range. */
+  const staggerStart = 0.05 + index * 0.06;
+  const staggerEnd = staggerStart + 0.25;
+
+  const x = useTransform(
+    scrollYProgress,
+    [staggerStart, staggerEnd],
+    [config.x, 0]
+  );
+  const y = useTransform(
+    scrollYProgress,
+    [staggerStart, staggerEnd],
+    [config.y, 0]
+  );
+  const rotate = useTransform(
+    scrollYProgress,
+    [staggerStart, staggerEnd],
+    [config.rotate, 0]
+  );
+  const opacity = useTransform(
+    scrollYProgress,
+    [staggerStart, staggerEnd],
+    [0.3, 1]
+  );
+  const scale = useTransform(
+    scrollYProgress,
+    [staggerStart, staggerEnd],
+    [0.9, 1]
+  );
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={isCardInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      style={{ x, y, rotate, opacity, scale }}
       whileHover={{
         y: -8,
         transition: { type: "spring", stiffness: 300, damping: 20 },
@@ -79,7 +127,7 @@ function BentoCard({ children, className }: { children: React.ReactNode; classNa
 }
 
 function FeatureIcon({ index }: { index: number }) {
-  const Icon = features[index].icon;
+  const Icon: LucideIcon = features[index].icon;
   return <Icon className="h-6 w-6 text-white" />;
 }
 
@@ -132,18 +180,26 @@ function ComplianceBadges() {
 }
 
 export default function FeaturesSection() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
+
   const headerY = useTransform(scrollYProgress, [0, 0.4], [60, -20]);
 
   return (
-    <section id="features" ref={sectionRef} className="section-padding relative">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial-[at_50%_50%] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
+    <section
+      id="features"
+      ref={sectionRef}
+      className="section-padding relative"
+    >
+      {/* Background: dot grid overlay */}
+      <div className="absolute inset-0 bg-dot-grid opacity-30 pointer-events-none" />
+
+      {/* Ambient gradient glow behind the grid */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-radial-[at_50%_50%] from-indigo-500/10 via-violet-500/5 to-transparent pointer-events-none" />
 
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header with scroll-linked parallax */}
@@ -176,11 +232,15 @@ export default function FeaturesSection() {
           />
         </motion.div>
 
-        {/* Bento Grid */}
+        {/* Bento Grid with scroll-driven assembly */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 0: Smart Call Routing — col-span-2 horizontal */}
-          <BentoCard className="col-span-1 sm:col-span-2">
-            <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
+          {/* Card 0: Smart Call Routing -- col-span-2 horizontal */}
+          <BentoCard
+            index={0}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1 sm:col-span-2"
+          >
+            <div className="glass-card p-8 h-full flex flex-row items-center gap-6 hover:glow-box transition-shadow duration-300">
               <div className="flex-1">
                 <div
                   className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[0].gradient} shadow-lg`}
@@ -200,9 +260,13 @@ export default function FeaturesSection() {
             </div>
           </BentoCard>
 
-          {/* Card 1: Real-Time Bidding - col-span-1 vertical */}
-          <BentoCard className="col-span-1">
-            <div className="glass-card p-8 h-full flex flex-col">
+          {/* Card 1: Real-Time Bidding -- col-span-1 vertical */}
+          <BentoCard
+            index={1}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1"
+          >
+            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[1].gradient} shadow-lg`}
               >
@@ -217,9 +281,13 @@ export default function FeaturesSection() {
             </div>
           </BentoCard>
 
-          {/* Card 2: AI Intelligence - col-span-1 vertical */}
-          <BentoCard className="col-span-1">
-            <div className="glass-card p-8 h-full flex flex-col">
+          {/* Card 2: AI Intelligence -- col-span-1 vertical */}
+          <BentoCard
+            index={2}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1"
+          >
+            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[2].gradient} shadow-lg`}
               >
@@ -234,9 +302,13 @@ export default function FeaturesSection() {
             </div>
           </BentoCard>
 
-          {/* Card 3: Multi-Carrier - col-span-2 horizontal */}
-          <BentoCard className="col-span-1 sm:col-span-2">
-            <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
+          {/* Card 3: Multi-Carrier -- col-span-2 horizontal */}
+          <BentoCard
+            index={3}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1 sm:col-span-2"
+          >
+            <div className="glass-card p-8 h-full flex flex-row items-center gap-6 hover:glow-box transition-shadow duration-300">
               <div className="flex-1">
                 <div
                   className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[3].gradient} shadow-lg`}
@@ -256,9 +328,13 @@ export default function FeaturesSection() {
             </div>
           </BentoCard>
 
-          {/* Card 4: Publisher Portals - col-span-1 vertical */}
-          <BentoCard className="col-span-1">
-            <div className="glass-card p-8 h-full flex flex-col">
+          {/* Card 4: Publisher Portals -- col-span-1 vertical */}
+          <BentoCard
+            index={4}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1"
+          >
+            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[4].gradient} shadow-lg`}
               >
@@ -273,9 +349,13 @@ export default function FeaturesSection() {
             </div>
           </BentoCard>
 
-          {/* Card 5: Compliance - col-span-3 full-width banner */}
-          <BentoCard className="col-span-1 sm:col-span-2 lg:col-span-3">
-            <div className="glass-card p-8 h-full flex flex-col items-center text-center">
+          {/* Card 5: Compliance -- col-span-3 full-width banner */}
+          <BentoCard
+            index={5}
+            scrollYProgress={scrollYProgress}
+            className="col-span-1 sm:col-span-2 lg:col-span-3"
+          >
+            <div className="glass-card p-8 h-full flex flex-col items-center text-center hover:glow-box transition-shadow duration-300">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[5].gradient} shadow-lg`}
               >

@@ -23,6 +23,18 @@ const testimonials = getTestimonials();
 export default function TestimonialsSection() {
   return (
     <section className="section-padding relative overflow-hidden">
+      {/* Dot grid overlay */}
+      <div className="absolute inset-0 bg-dot-grid opacity-15 pointer-events-none" />
+
+      {/* Ambient blob */}
+      <div
+        className="ambient-blob animate-blob-drift w-[450px] h-[450px] top-1/4 -right-32"
+        style={{ background: "var(--blob-secondary)", animationDelay: "-5s" }}
+      />
+
+      {/* Gradient glow behind testimonial grid */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-radial-[at_50%_50%] from-violet-500/6 via-transparent to-transparent pointer-events-none" />
+
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <motion.div

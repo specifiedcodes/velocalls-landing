@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Phone, Zap } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { DASHBOARD_URL } from "@/lib/config";
 import AnimatedCounter from "@/components/animated-counter";
@@ -47,7 +47,6 @@ const statItemVariants = {
 export default function HeroSection() {
   const { scrollY } = useScroll();
 
-  // Direct scroll transforms (no spring = no lag)
   const textY = useTransform(scrollY, [0, 400], [0, -60]);
   const textOpacity = useTransform(scrollY, [0, 350], [1, 0]);
   const dashY = useTransform(scrollY, [0, 800], [0, -80]);
@@ -55,35 +54,96 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Subtle gradient background instead of Three.js */}
-      <div className="absolute inset-0 z-0">
+      {/* === LAYER 1: Aurora gradient blobs === */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Blob 1: Indigo — top left */}
         <div
-          className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
+          className="absolute rounded-full"
           style={{
+            width: "800px",
+            height: "800px",
+            top: "-15%",
+            left: "-10%",
             background:
-              "radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%)",
+            filter: "blur(80px)",
+            mixBlendMode: "screen",
+            animation: "aurora-1 12s ease-in-out infinite",
           }}
         />
+        {/* Blob 2: Violet — top right */}
         <div
-          className="absolute top-[10%] right-[-5%] w-[500px] h-[500px] rounded-full opacity-20"
+          className="absolute rounded-full"
           style={{
+            width: "700px",
+            height: "700px",
+            top: "5%",
+            right: "-8%",
             background:
-              "radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0.06) 50%, transparent 70%)",
+            filter: "blur(90px)",
+            mixBlendMode: "screen",
+            animation: "aurora-2 14s ease-in-out infinite",
+            animationDelay: "-3s",
           }}
         />
+        {/* Blob 3: Cyan — bottom center */}
         <div
-          className="absolute bottom-[10%] left-[20%] w-[400px] h-[400px] rounded-full opacity-15"
+          className="absolute rounded-full"
           style={{
+            width: "650px",
+            height: "650px",
+            bottom: "0%",
+            left: "20%",
             background:
-              "radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 70%)",
+            filter: "blur(85px)",
+            mixBlendMode: "screen",
+            animation: "aurora-3 16s ease-in-out infinite",
+            animationDelay: "-6s",
+          }}
+        />
+        {/* Blob 4: Deep indigo — center */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: "600px",
+            height: "600px",
+            top: "30%",
+            left: "35%",
+            background:
+              "radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, rgba(79, 70, 229, 0.04) 50%, transparent 70%)",
+            filter: "blur(100px)",
+            mixBlendMode: "screen",
+            animation: "aurora-1 18s ease-in-out infinite",
+            animationDelay: "-9s",
+          }}
+        />
+        {/* Blob 5: Violet-pink — bottom right */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: "550px",
+            height: "550px",
+            bottom: "10%",
+            right: "5%",
+            background:
+              "radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, rgba(167, 139, 250, 0.04) 50%, transparent 70%)",
+            filter: "blur(75px)",
+            mixBlendMode: "screen",
+            animation: "aurora-2 20s ease-in-out infinite",
+            animationDelay: "-12s",
           }}
         />
       </div>
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-transparent via-background/30 to-background" />
+      {/* === LAYER 2: Dot grid overlay === */}
+      <div className="absolute inset-0 z-[1] bg-dot-grid opacity-40" />
 
-      {/* Content */}
+      {/* === LAYER 3: Gradient overlay for readability === */}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-b from-background/70 via-background/30 to-background" />
+
+      {/* === LAYER 4: Content === */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-20">
         {/* Text with scroll-linked parallax */}
         <motion.div style={{ y: textY, opacity: textOpacity }}>
@@ -144,11 +204,62 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* Dashboard with scroll-linked parallax */}
+        {/* Dashboard with scroll-linked parallax + floating cards + glow border */}
         <motion.div
           style={{ y: dashY, scale: dashScale }}
-          className="mt-16 max-w-4xl mx-auto"
+          className="mt-20 max-w-4xl mx-auto relative"
         >
+          {/* Floating glass notification card: Call Connected (left) */}
+          <motion.div
+            initial={{ opacity: 0, x: -30, y: 20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="absolute -left-8 top-8 z-20 hidden lg:block"
+          >
+            <div
+              className="glass-card p-3 rounded-xl animate-float glow-box"
+              style={{ animationDelay: "-1s" }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    Call Connected
+                  </p>
+                  <p className="text-[10px] text-muted">+1 (555) 123-4567</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Floating glass notification card: Revenue +24% (right) */}
+          <motion.div
+            initial={{ opacity: 0, x: 30, y: -20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.5 }}
+            className="absolute -right-6 top-20 z-20 hidden lg:block"
+          >
+            <div
+              className="glass-card p-3 rounded-xl animate-float glow-box"
+              style={{ animationDelay: "-3s" }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-600 flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    Revenue +24%
+                  </p>
+                  <p className="text-[10px] text-success">This month</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Dashboard with glowing border */}
           <motion.div
             initial={{ opacity: 0, y: 60, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -157,6 +268,7 @@ export default function HeroSection() {
               delay: 0.5,
               ease: [0.16, 1, 0.3, 1],
             }}
+            className="relative rounded-[1.5rem] glow-border"
           >
             <DashboardMockup />
           </motion.div>
@@ -168,18 +280,30 @@ export default function HeroSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           variants={statsContainerVariants}
-          className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-3xl mx-auto"
+          className="mt-20 grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-3xl mx-auto"
         >
-          <motion.div variants={statItemVariants} className="glass rounded-2xl p-4">
+          <motion.div
+            variants={statItemVariants}
+            className="glass rounded-2xl p-5 glow-box"
+          >
             <AnimatedCounter end={50} suffix="M+" label="Calls Tracked" />
           </motion.div>
-          <motion.div variants={statItemVariants} className="glass rounded-2xl p-4">
+          <motion.div
+            variants={statItemVariants}
+            className="glass rounded-2xl p-5 glow-box"
+          >
             <AnimatedCounter end={99} suffix=".9%" label="Uptime SLA" />
           </motion.div>
-          <motion.div variants={statItemVariants} className="glass rounded-2xl p-4">
+          <motion.div
+            variants={statItemVariants}
+            className="glass rounded-2xl p-5 glow-box"
+          >
             <AnimatedCounter end={500} suffix="+" label="Businesses" />
           </motion.div>
-          <motion.div variants={statItemVariants} className="glass rounded-2xl p-4">
+          <motion.div
+            variants={statItemVariants}
+            className="glass rounded-2xl p-5 glow-box"
+          >
             <AnimatedCounter
               end={200}
               prefix="<"
@@ -191,7 +315,7 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 z-[2] bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 z-[5] bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 }
