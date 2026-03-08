@@ -1,0 +1,11 @@
+# Railway Configuration for VeloCalls Landing Page (Next.js)
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "../Dockerfile.landing"
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
