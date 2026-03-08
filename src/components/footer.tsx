@@ -110,7 +110,15 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 pt-8 sm:flex-row" style={{ borderTop: '1px solid var(--divider)' }}>
           <p className="text-sm text-muted">
-            &copy; 2026 VeloCalls. All rights reserved.
+            &copy; 2026 VeloCalls. All rights reserved. A product by{" "}
+            <a
+              href="https://velocitydigitallabs.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted hover:text-foreground transition-colors underline underline-offset-2"
+            >
+              Velocity Digital Labs LLC
+            </a>
           </p>
           <div className="flex items-center gap-6">
             <a

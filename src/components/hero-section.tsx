@@ -1,16 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { ArrowRight, Play } from "lucide-react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { DASHBOARD_URL } from "@/lib/config";
 import AnimatedCounter from "@/components/animated-counter";
 import DashboardMockup from "@/components/dashboard-mockup";
-
-const ThreeBackground = dynamic(
-  () => import("@/components/three-background"),
-  { ssr: false }
-);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -53,72 +47,41 @@ const statItemVariants = {
 export default function HeroSection() {
   const { scrollY } = useScroll();
 
-  // Smooth spring config for buttery parallax
-  const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
-  const smoothScrollY = useSpring(scrollY, springConfig);
-
-  // Text parallax -- fades and drifts up on scroll
-  const textY = useTransform(smoothScrollY, [0, 400], [0, -60]);
-  const textOpacity = useTransform(smoothScrollY, [0, 350], [1, 0]);
-
-  // Dashboard parallax -- moves slower than scroll, scales down, flattens perspective
-  const dashY = useTransform(smoothScrollY, [0, 800], [0, -100]);
-  const dashScale = useTransform(smoothScrollY, [0, 600], [1, 0.92]);
-  const dashRotateX = useTransform(smoothScrollY, [0, 600], [2, 0]);
-
-  // Gradient orbs parallax -- each layer moves at a different rate for depth
-  const orb1Y = useTransform(smoothScrollY, [0, 800], [0, -200]);
-  const orb2Y = useTransform(smoothScrollY, [0, 800], [0, -120]);
-  const orb3Y = useTransform(smoothScrollY, [0, 800], [0, -160]);
+  // Direct scroll transforms (no spring = no lag)
+  const textY = useTransform(scrollY, [0, 400], [0, -60]);
+  const textOpacity = useTransform(scrollY, [0, 350], [1, 0]);
+  const dashY = useTransform(scrollY, [0, 800], [0, -80]);
+  const dashScale = useTransform(scrollY, [0, 600], [1, 0.95]);
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Three.js background */}
-      <ThreeBackground />
+      {/* Subtle gradient background instead of Three.js */}
+      <div className="absolute inset-0 z-0">
+        <div
+          className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute top-[10%] right-[-5%] w-[500px] h-[500px] rounded-full opacity-20"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute bottom-[10%] left-[20%] w-[400px] h-[400px] rounded-full opacity-15"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%)",
+          }}
+        />
+      </div>
 
       {/* Gradient overlays */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-transparent via-background/30 to-background" />
-      <div className="absolute inset-0 z-[1] bg-gradient-to-r from-background/40 via-transparent to-background/40" />
-
-      {/* Scroll-linked gradient orbs */}
-      <motion.div
-        style={{ y: orb1Y }}
-        className="absolute top-[-10%] left-[-15%] w-[700px] h-[700px] rounded-full pointer-events-none z-0"
-      >
-        <div
-          className="w-full h-full rounded-full opacity-60 dark:mix-blend-screen"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)",
-          }}
-        />
-      </motion.div>
-
-      <motion.div
-        style={{ y: orb2Y }}
-        className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none z-0"
-      >
-        <div
-          className="w-full h-full rounded-full opacity-50 dark:mix-blend-screen"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, rgba(139, 92, 246, 0.04) 50%, transparent 70%)",
-          }}
-        />
-      </motion.div>
-
-      <motion.div
-        style={{ y: orb3Y }}
-        className="absolute top-[50%] left-[10%] w-[800px] h-[800px] rounded-full pointer-events-none z-0"
-      >
-        <div
-          className="w-full h-full rounded-full opacity-40 dark:mix-blend-screen"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(79, 70, 229, 0.03) 50%, transparent 70%)",
-          }}
-        />
-      </motion.div>
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-20">
@@ -183,19 +146,15 @@ export default function HeroSection() {
 
         {/* Dashboard with scroll-linked parallax */}
         <motion.div
-          style={{
-            y: dashY,
-            scale: dashScale,
-            rotateX: dashRotateX,
-          }}
-          className="mt-16 max-w-4xl mx-auto [perspective:1200px]"
+          style={{ y: dashY, scale: dashScale }}
+          className="mt-16 max-w-4xl mx-auto"
         >
           <motion.div
-            initial={{ opacity: 0, y: 60, scale: 0.9 }}
+            initial={{ opacity: 0, y: 60, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
-              duration: 1,
-              delay: 0.6,
+              duration: 0.8,
+              delay: 0.5,
               ease: [0.16, 1, 0.3, 1],
             }}
           >

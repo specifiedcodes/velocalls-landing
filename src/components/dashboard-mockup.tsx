@@ -233,7 +233,7 @@ export default function DashboardMockup() {
           <div className="glass-pill mx-auto flex-1 max-w-xs px-4 py-1 text-center">
             <span className="text-xs text-muted flex items-center justify-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              app.velocalls.io/dashboard
+              dashboard.velocalls.com
             </span>
           </div>
           <div className="w-[52px]" />

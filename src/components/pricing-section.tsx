@@ -137,16 +137,16 @@ export default function PricingSection() {
             >
               <div
                 className={cn(
-                  "glass-card relative overflow-hidden p-8 flex flex-col",
+                  "glass-card relative p-8 flex flex-col",
                   plan.highlighted &&
                     "gradient-border scale-105 shadow-lg shadow-indigo-500/10"
                 )}
               >
                 {/* Popular Badge */}
                 {plan.badge && (
-                  <div className="absolute top-0 right-0">
+                  <div className="absolute top-0 right-0 z-20 overflow-hidden rounded-bl-xl rounded-tr-[1rem]">
                     <div
-                      className="gradient-primary flex items-center gap-1.5 rounded-bl-xl px-4 py-1.5 text-xs font-semibold text-white overflow-hidden relative"
+                      className="gradient-primary flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white overflow-hidden relative"
                     >
                       <div
                         className="absolute inset-0 pointer-events-none"
@@ -162,46 +162,49 @@ export default function PricingSection() {
                   </div>
                 )}
 
-                {/* Plan Name */}
-                <h3 className="text-lg font-semibold text-foreground">
-                  {plan.name}
-                </h3>
-                <p className="mt-1 text-sm text-muted">{plan.description}</p>
+                {/* Content wrapper above gradient-border pseudo-element */}
+                <div className="relative z-10 flex flex-col flex-1">
+                  {/* Plan Name */}
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {plan.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted">{plan.description}</p>
 
-                {/* Price */}
-                <div className="mt-6 mb-6">
-                  <span className={cn("text-4xl font-extrabold", plan.highlighted ? "text-primary" : "text-foreground")}>
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className="text-muted text-lg">{plan.period}</span>
-                  )}
+                  {/* Price */}
+                  <div className="mt-6 mb-6">
+                    <span className="text-4xl font-extrabold text-foreground">
+                      {plan.price}
+                    </span>
+                    {plan.period && (
+                      <span className="text-muted text-lg">{plan.period}</span>
+                    )}
+                  </div>
+
+                  {/* CTA */}
+                  <a
+                    href={plan.ctaHref}
+                    className={cn(
+                      "w-full text-center mb-8",
+                      plan.highlighted ? "btn-primary" : "btn-secondary"
+                    )}
+                  >
+                    {plan.cta}
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+
+                  {/* Features */}
+                  <ul className="space-y-3 flex-1">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-start gap-3 text-sm text-muted"
+                      >
+                        <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-
-                {/* CTA */}
-                <a
-                  href={plan.ctaHref}
-                  className={cn(
-                    "w-full text-center mb-8",
-                    plan.highlighted ? "btn-primary" : "btn-secondary"
-                  )}
-                >
-                  {plan.cta}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-
-                {/* Features */}
-                <ul className="space-y-3 flex-1">
-                  {plan.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-3 text-sm text-muted"
-                    >
-                      <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </motion.div>
           ))}
