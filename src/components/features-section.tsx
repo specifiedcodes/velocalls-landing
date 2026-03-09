@@ -268,10 +268,10 @@ export default function FeaturesSection() {
             </div>
           </motion.div>
 
-          {/* Card 5: Compliance — col-span-3 full-width */}
+          {/* Card 5: Compliance — fills remaining 2 cols beside Card 4 */}
           <motion.div
             variants={cardVariants}
-            className="col-span-1 sm:col-span-2 lg:col-span-3"
+            className="col-span-1 sm:col-span-2 lg:col-span-2"
           >
             <div className="glass-card p-8 h-full flex flex-col items-center text-center">
               <div
