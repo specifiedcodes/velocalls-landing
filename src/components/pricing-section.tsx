@@ -126,8 +126,9 @@ export default function PricingSection() {
                 className={cn(
                   "glass-card relative p-8 flex flex-col",
                   plan.highlighted &&
-                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10 bg-background"
+                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10"
                 )}
+                style={plan.highlighted ? { background: 'var(--bg)' } : undefined}
               >
                 {/* Popular Badge */}
                 {plan.badge && (
