@@ -103,22 +103,6 @@ export default function HowItWorksSection() {
       ref={sectionRef}
       className="section-padding relative overflow-hidden"
     >
-      {/* Dot grid overlay */}
-      <div className="absolute inset-0 bg-dot-grid opacity-20 pointer-events-none" />
-
-      {/* Ambient blobs */}
-      <div
-        className="ambient-blob animate-blob-drift w-[450px] h-[450px] -top-24 -right-32"
-        style={{ background: "var(--blob-secondary)", animationDelay: "-3s" }}
-      />
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] bottom-0 -left-40"
-        style={{ background: "var(--blob-primary)", animationDelay: "-8s" }}
-      />
-
-      {/* Subtle gradient glow behind timeline */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[700px] bg-radial-[at_50%_50%] from-indigo-500/8 via-transparent to-transparent pointer-events-none" />
-
       <div className="mx-auto max-w-5xl relative z-10">
         {/* Section Header */}
         <motion.div

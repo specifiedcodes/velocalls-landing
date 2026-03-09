@@ -8,9 +8,8 @@ import {
   Users,
   ShieldCheck,
 } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import type { MotionValue } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
 const features = [
@@ -58,73 +57,23 @@ const features = [
   },
 ];
 
-/* Scatter starting positions for each card (exploded view) */
-const scatterConfigs = [
-  { x: -80, y: 60, rotate: -4 },  // Card 0: col-span-2, drifts from left
-  { x: 60, y: 80, rotate: 3 },    // Card 1: col-span-1, drifts from right
-  { x: -40, y: 100, rotate: -2 }, // Card 2: col-span-1, drifts from left
-  { x: 80, y: 60, rotate: 4 },    // Card 3: col-span-2, drifts from right
-  { x: -60, y: 80, rotate: -3 },  // Card 4: col-span-1, drifts from left
-  { x: 0, y: 100, rotate: 0 },    // Card 5: col-span-3, rises from below
-];
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
-function BentoCard({
-  children,
-  className,
-  index,
-  scrollYProgress,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  index: number;
-  scrollYProgress: MotionValue<number>;
-}) {
-  const config = scatterConfigs[index];
-
-  /* Stagger the assembly: card 0 assembles first, card 5 last.
-     Each card animates within a portion of the total scroll range. */
-  const staggerStart = 0.05 + index * 0.06;
-  const staggerEnd = staggerStart + 0.25;
-
-  const x = useTransform(
-    scrollYProgress,
-    [staggerStart, staggerEnd],
-    [config.x, 0]
-  );
-  const y = useTransform(
-    scrollYProgress,
-    [staggerStart, staggerEnd],
-    [config.y, 0]
-  );
-  const rotate = useTransform(
-    scrollYProgress,
-    [staggerStart, staggerEnd],
-    [config.rotate, 0]
-  );
-  const opacity = useTransform(
-    scrollYProgress,
-    [staggerStart, staggerEnd],
-    [0.3, 1]
-  );
-  const scale = useTransform(
-    scrollYProgress,
-    [staggerStart, staggerEnd],
-    [0.9, 1]
-  );
-
-  return (
-    <motion.div
-      style={{ x, y, rotate, opacity, scale }}
-      whileHover={{
-        y: -8,
-        transition: { type: "spring", stiffness: 300, damping: 20 },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const },
+  },
+};
 
 function FeatureIcon({ index }: { index: number }) {
   const Icon: LucideIcon = features[index].icon;
@@ -180,35 +129,21 @@ function ComplianceBadges() {
 }
 
 export default function FeaturesSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  const headerY = useTransform(scrollYProgress, [0, 0.4], [60, -20]);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <section
       id="features"
-      ref={sectionRef}
-      className="section-padding relative"
+      className="section-padding relative overflow-hidden"
     >
-      {/* Background: dot grid overlay */}
-      <div className="absolute inset-0 bg-dot-grid opacity-30 pointer-events-none" />
-
-      {/* Ambient gradient glow behind the grid */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-radial-[at_50%_50%] from-indigo-500/10 via-violet-500/5 to-transparent pointer-events-none" />
-
       <div className="mx-auto max-w-7xl relative z-10">
-        {/* Section Header with scroll-linked parallax */}
+        {/* Section Header */}
         <motion.div
-          style={{ y: headerY }}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
           <span className="inline-block text-sm font-semibold uppercase tracking-widest text-primary mb-4">
@@ -222,25 +157,22 @@ export default function FeaturesSection() {
             From intelligent routing to AI-powered analytics, VeloCalls gives
             you the tools to maximize every call.
           </p>
-          {/* Animated gradient underline */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="h-px w-32 mx-auto mt-6 bg-gradient-to-r from-transparent via-primary/50 to-transparent origin-center"
-          />
         </motion.div>
 
-        {/* Bento Grid with scroll-driven assembly */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 0: Smart Call Routing -- col-span-2 horizontal */}
-          <BentoCard
-            index={0}
-            scrollYProgress={scrollYProgress}
+        {/* Bento Grid */}
+        <motion.div
+          ref={ref}
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {/* Card 0: Smart Call Routing — col-span-2 horizontal */}
+          <motion.div
+            variants={cardVariants}
             className="col-span-1 sm:col-span-2"
           >
-            <div className="glass-card p-8 h-full flex flex-row items-center gap-6 hover:glow-box transition-shadow duration-300">
+            <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
               <div className="flex-1">
                 <div
                   className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[0].gradient} shadow-lg`}
@@ -258,15 +190,11 @@ export default function FeaturesSection() {
                 <RoutingDiagram />
               </div>
             </div>
-          </BentoCard>
+          </motion.div>
 
-          {/* Card 1: Real-Time Bidding -- col-span-1 vertical */}
-          <BentoCard
-            index={1}
-            scrollYProgress={scrollYProgress}
-            className="col-span-1"
-          >
-            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
+          {/* Card 1: Real-Time Bidding */}
+          <motion.div variants={cardVariants} className="col-span-1">
+            <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[1].gradient} shadow-lg`}
               >
@@ -279,15 +207,11 @@ export default function FeaturesSection() {
                 {features[1].description}
               </p>
             </div>
-          </BentoCard>
+          </motion.div>
 
-          {/* Card 2: AI Intelligence -- col-span-1 vertical */}
-          <BentoCard
-            index={2}
-            scrollYProgress={scrollYProgress}
-            className="col-span-1"
-          >
-            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
+          {/* Card 2: AI Intelligence */}
+          <motion.div variants={cardVariants} className="col-span-1">
+            <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[2].gradient} shadow-lg`}
               >
@@ -300,15 +224,14 @@ export default function FeaturesSection() {
                 {features[2].description}
               </p>
             </div>
-          </BentoCard>
+          </motion.div>
 
-          {/* Card 3: Multi-Carrier -- col-span-2 horizontal */}
-          <BentoCard
-            index={3}
-            scrollYProgress={scrollYProgress}
+          {/* Card 3: Multi-Carrier — col-span-2 horizontal */}
+          <motion.div
+            variants={cardVariants}
             className="col-span-1 sm:col-span-2"
           >
-            <div className="glass-card p-8 h-full flex flex-row items-center gap-6 hover:glow-box transition-shadow duration-300">
+            <div className="glass-card p-8 h-full flex flex-row items-center gap-6">
               <div className="flex-1">
                 <div
                   className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[3].gradient} shadow-lg`}
@@ -326,15 +249,11 @@ export default function FeaturesSection() {
                 <CarrierStatusBars />
               </div>
             </div>
-          </BentoCard>
+          </motion.div>
 
-          {/* Card 4: Publisher Portals -- col-span-1 vertical */}
-          <BentoCard
-            index={4}
-            scrollYProgress={scrollYProgress}
-            className="col-span-1"
-          >
-            <div className="glass-card p-8 h-full flex flex-col hover:glow-box transition-shadow duration-300">
+          {/* Card 4: Publisher Portals */}
+          <motion.div variants={cardVariants} className="col-span-1">
+            <div className="glass-card p-8 h-full flex flex-col">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[4].gradient} shadow-lg`}
               >
@@ -347,15 +266,14 @@ export default function FeaturesSection() {
                 {features[4].description}
               </p>
             </div>
-          </BentoCard>
+          </motion.div>
 
-          {/* Card 5: Compliance -- col-span-3 full-width banner */}
-          <BentoCard
-            index={5}
-            scrollYProgress={scrollYProgress}
+          {/* Card 5: Compliance — col-span-3 full-width */}
+          <motion.div
+            variants={cardVariants}
             className="col-span-1 sm:col-span-2 lg:col-span-3"
           >
-            <div className="glass-card p-8 h-full flex flex-col items-center text-center hover:glow-box transition-shadow duration-300">
+            <div className="glass-card p-8 h-full flex flex-col items-center text-center">
               <div
                 className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${features[5].gradient} shadow-lg`}
               >
@@ -369,8 +287,8 @@ export default function FeaturesSection() {
               </p>
               <ComplianceBadges />
             </div>
-          </BentoCard>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

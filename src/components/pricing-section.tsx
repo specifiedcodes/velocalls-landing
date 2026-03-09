@@ -86,22 +86,6 @@ export default function PricingSection() {
 
   return (
     <section id="pricing" className="section-padding relative overflow-hidden">
-      {/* Dot grid overlay */}
-      <div className="absolute inset-0 bg-dot-grid opacity-20 pointer-events-none" />
-
-      {/* Ambient blobs */}
-      <div
-        className="ambient-blob animate-blob-drift w-[500px] h-[500px] -top-32 -left-48"
-        style={{ background: "var(--blob-primary)", animationDelay: "-4s" }}
-      />
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] -bottom-32 -right-48"
-        style={{ background: "var(--blob-accent)", animationDelay: "-7s" }}
-      />
-
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-radial-[at_50%_50%] from-violet-500/8 via-transparent to-transparent pointer-events-none" />
-
       <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <motion.div
@@ -142,7 +126,7 @@ export default function PricingSection() {
                 className={cn(
                   "glass-card relative p-8 flex flex-col",
                   plan.highlighted &&
-                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10 bg-background glow-box"
+                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10 bg-background"
                 )}
               >
                 {/* Popular Badge */}

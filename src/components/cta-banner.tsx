@@ -15,19 +15,6 @@ export default function CTABanner() {
 
   return (
     <section className="section-padding relative overflow-hidden">
-      {/* Dot grid overlay */}
-      <div className="absolute inset-0 bg-dot-grid opacity-20 pointer-events-none" />
-
-      {/* Ambient blobs */}
-      <div
-        className="ambient-blob animate-blob-drift w-[500px] h-[500px] -top-32 -left-40"
-        style={{ background: "var(--blob-primary)", animationDelay: "-2s" }}
-      />
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] -bottom-24 -right-32"
-        style={{ background: "var(--blob-secondary)", animationDelay: "-9s" }}
-      />
-
       <div className="mx-auto max-w-5xl relative z-10">
         <motion.div
           ref={ref}
@@ -43,25 +30,6 @@ export default function CTABanner() {
 
           {/* Pattern overlay */}
           <div className="absolute inset-0 opacity-10 bg-grid" />
-
-          {/* Glow effects */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-cyan-400/10 blur-3xl" />
-
-          {/* Decorative floating notification - desktop only */}
-          <div className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/2 hidden xl:block">
-            <div className="glass-card p-4 rounded-2xl animate-float" style={{ animationDelay: "-2s" }}>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                  <Phone className="h-4 w-4 text-success" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-foreground">Call Connected!</p>
-                  <p className="text-xs text-muted">+1 (555) 123-4567</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Content */}
           <div className="relative px-8 py-16 sm:px-16 sm:py-20 text-center">

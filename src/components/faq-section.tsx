@@ -106,15 +106,6 @@ export default function FAQSection() {
 
   return (
     <section id="faq" className="section-padding relative overflow-hidden">
-      {/* Dot grid overlay */}
-      <div className="absolute inset-0 bg-dot-grid opacity-15 pointer-events-none" />
-
-      {/* Ambient blob */}
-      <div
-        className="ambient-blob animate-blob-drift w-[400px] h-[400px] bottom-0 -left-32"
-        style={{ background: "var(--blob-primary)", animationDelay: "-6s" }}
-      />
-
       <div className="mx-auto max-w-4xl relative z-10">
         {/* Section Header */}
         <motion.div
