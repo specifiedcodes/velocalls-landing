@@ -124,11 +124,19 @@ export default function PricingSection() {
             >
               <div
                 className={cn(
-                  "glass-card relative p-8 flex flex-col",
-                  plan.highlighted &&
-                    "gradient-border scale-105 shadow-lg shadow-indigo-500/10"
+                  "relative p-8 flex flex-col rounded-2xl",
+                  plan.highlighted
+                    ? "scale-105 shadow-lg shadow-indigo-500/10"
+                    : "glass-card"
                 )}
-                style={plan.highlighted ? { background: 'var(--bg)' } : undefined}
+                style={
+                  plan.highlighted
+                    ? {
+                        background: "var(--bg)",
+                        border: "2px solid rgba(99, 102, 241, 0.4)",
+                      }
+                    : undefined
+                }
               >
                 {/* Popular Badge */}
                 {plan.badge && (
