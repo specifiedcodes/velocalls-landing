@@ -18,11 +18,17 @@ export default function Home() {
         <div className="section-padding !pt-0 !pb-12">
           <LogoCloud />
         </div>
-        <FeaturesSection />
+        <div className="section-alt">
+          <FeaturesSection />
+        </div>
         <HowItWorksSection />
-        <PricingSection />
+        <div className="section-alt">
+          <PricingSection />
+        </div>
         <TestimonialsSection />
-        <FAQSection />
+        <div className="section-alt">
+          <FAQSection />
+        </div>
         <CTABanner />
       </main>
       <Footer />
