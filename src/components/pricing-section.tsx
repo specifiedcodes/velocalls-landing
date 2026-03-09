@@ -16,15 +16,17 @@ const plans = [
     ctaHref: `${DASHBOARD_URL}/register`,
     highlighted: false,
     features: [
-      "100 calls/month",
-      "1 campaign",
-      "Basic IVR",
-      "Email support",
-      "5 phone numbers",
+      "500 minutes/month",
+      "5 campaigns",
+      "10 phone numbers",
+      "2 team members",
+      "Basic IVR builder",
+      "RTB engine",
+      "Webhooks",
     ],
   },
   {
-    name: "Professional",
+    name: "Growth",
     price: "$199",
     period: "/mo",
     description: "For growing call businesses",
@@ -33,31 +35,53 @@ const plans = [
     highlighted: true,
     badge: "Most Popular",
     features: [
-      "10,000 calls/month",
-      "Unlimited campaigns",
-      "Visual IVR builder",
-      "Real-time bidding",
-      "AI transcription",
-      "Priority support",
+      "5,000 minutes/month",
+      "25 campaigns",
       "50 phone numbers",
+      "10 team members",
+      "AI conversation intelligence",
+      "Advanced analytics",
+      "Ad platform integrations",
+      "Multi-carrier (2)",
+      "Priority support",
+    ],
+  },
+  {
+    name: "Pro",
+    price: "$499",
+    period: "/mo",
+    description: "For high-volume operations",
+    cta: "Start Free Trial",
+    ctaHref: `${DASHBOARD_URL}/register`,
+    highlighted: false,
+    features: [
+      "15,000 minutes/month",
+      "Unlimited campaigns",
+      "Unlimited phone numbers",
+      "50 team members",
+      "Everything in Growth",
+      "SSO / SAML",
+      "Custom YAML carriers",
+      "Unlimited carriers",
+      "200 concurrent calls",
     ],
   },
   {
     name: "Enterprise",
     price: "Custom",
     period: "",
-    description: "For high-volume operations",
+    description: "For networks & resellers",
     cta: "Contact Sales",
     ctaHref: "/contact",
     highlighted: false,
     features: [
-      "Unlimited calls",
-      "Unlimited campaigns",
-      "Custom integrations",
+      "Unlimited minutes",
+      "Unlimited everything",
       "Dedicated account manager",
-      "SLA guarantee",
-      "SSO / SAML",
-      "Unlimited phone numbers",
+      "SLA guarantee (99.9%)",
+      "White-label offering",
+      "Custom integrations",
+      "Unlimited concurrent calls",
     ],
   },
 ];
@@ -66,7 +90,7 @@ const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.1,
     },
   },
 };
@@ -113,7 +137,7 @@ export default function PricingSection() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid gap-8 lg:grid-cols-3 items-start"
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 items-start"
         >
           {plans.map((plan) => (
             <motion.div
@@ -124,9 +148,9 @@ export default function PricingSection() {
             >
               <div
                 className={cn(
-                  "relative p-8 flex flex-col rounded-2xl",
+                  "relative p-6 md:p-7 flex flex-col rounded-2xl",
                   plan.highlighted
-                    ? "scale-105 shadow-lg shadow-indigo-500/10"
+                    ? "shadow-lg shadow-indigo-500/10"
                     : "glass-card"
                 )}
                 style={
@@ -141,24 +165,23 @@ export default function PricingSection() {
                 {/* Popular Badge */}
                 {plan.badge && (
                   <div className="absolute top-0 right-0 z-20 overflow-hidden rounded-bl-xl rounded-tr-[1rem]">
-                    <div
-                      className="gradient-primary flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white overflow-hidden relative"
-                    >
+                    <div className="gradient-primary flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white overflow-hidden relative">
                       <div
                         className="absolute inset-0 pointer-events-none"
                         style={{
-                          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                          background:
+                            "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
                           backgroundSize: "200% 100%",
                           animation: "shimmer-badge 3s infinite",
                         }}
                       />
-                      <Sparkles className="h-3.5 w-3.5 relative z-10" />
+                      <Sparkles className="h-3 w-3 relative z-10" />
                       <span className="relative z-10">{plan.badge}</span>
                     </div>
                   </div>
                 )}
 
-                {/* Content wrapper above gradient-border pseudo-element */}
+                {/* Content */}
                 <div className="relative z-10 flex flex-col flex-1">
                   {/* Plan Name */}
                   <h3 className="text-lg font-semibold text-foreground">
@@ -167,12 +190,14 @@ export default function PricingSection() {
                   <p className="mt-1 text-sm text-muted">{plan.description}</p>
 
                   {/* Price */}
-                  <div className="mt-6 mb-6">
-                    <span className="text-4xl font-extrabold text-foreground">
+                  <div className="mt-5 mb-5">
+                    <span className="text-3xl md:text-4xl font-extrabold text-foreground">
                       {plan.price}
                     </span>
                     {plan.period && (
-                      <span className="text-muted text-lg">{plan.period}</span>
+                      <span className="text-muted text-base md:text-lg">
+                        {plan.period}
+                      </span>
                     )}
                   </div>
 
@@ -180,7 +205,7 @@ export default function PricingSection() {
                   <a
                     href={plan.ctaHref}
                     className={cn(
-                      "w-full text-center mb-8",
+                      "w-full text-center mb-6",
                       plan.highlighted ? "btn-primary" : "btn-secondary"
                     )}
                   >
@@ -189,11 +214,11 @@ export default function PricingSection() {
                   </a>
 
                   {/* Features */}
-                  <ul className="space-y-3 flex-1">
+                  <ul className="space-y-2.5 flex-1">
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-start gap-3 text-sm text-muted"
+                        className="flex items-start gap-2.5 text-sm text-muted"
                       >
                         <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
                         <span>{feature}</span>
@@ -205,6 +230,20 @@ export default function PricingSection() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Usage note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-center text-sm text-muted mt-10"
+        >
+          All plans include overage protection. Usage beyond included minutes
+          billed at competitive per-minute rates.
+          <br />
+          Annual billing saves ~17%. 14-day free trial on Growth & Pro plans.
+        </motion.p>
       </div>
     </section>
   );

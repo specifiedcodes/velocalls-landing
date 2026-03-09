@@ -2,6 +2,20 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import {
+  LayoutDashboard,
+  Megaphone,
+  Phone,
+  Settings,
+  Radio,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  CheckCircle,
+  Percent,
+  Headphones,
+  type LucideIcon,
+} from "lucide-react";
 
 /* -------------------------------------------------- */
 /*  Animated metric counter                           */
@@ -28,7 +42,7 @@ function AnimatedMetric({
 
     function tick(now: number) {
       const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(Math.round(eased * end));
       if (progress < 1) requestAnimationFrame(tick);
     }
@@ -45,160 +59,239 @@ function AnimatedMetric({
 }
 
 /* -------------------------------------------------- */
-/*  Metric card (glass card with animated value)      */
+/*  Stat card matching real dashboard pattern          */
 /* -------------------------------------------------- */
 
-function MetricCard({
-  children,
+function StatCard({
+  icon: Icon,
   label,
-  indicator,
+  children,
+  trend,
   delay,
 }: {
-  children: React.ReactNode;
+  icon: LucideIcon;
   label: string;
-  indicator: React.ReactNode;
+  children: React.ReactNode;
+  trend?: { value: number; direction: "up" | "down" };
   delay: number;
 }) {
   return (
     <motion.div
-      className="glass-card p-3 md:p-4 flex flex-col gap-1"
+      className="glass-card rounded-lg p-2.5 md:p-3 flex flex-col gap-1"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
     >
       <div className="flex items-center justify-between">
-        <span className="text-lg font-bold text-foreground md:text-xl">
-          {children}
+        <span className="text-[10px] md:text-xs text-muted font-medium">
+          {label}
         </span>
-        {indicator}
+        <Icon className="h-3 w-3 md:h-3.5 md:w-3.5 text-muted opacity-60" />
       </div>
-      <span className="text-xs text-muted">{label}</span>
+      <span className="text-sm font-bold text-foreground md:text-base">
+        {children}
+      </span>
+      {trend && (
+        <span
+          className={`flex items-center gap-0.5 text-[9px] md:text-[10px] ${
+            trend.direction === "up" ? "text-emerald-500" : "text-red-500"
+          }`}
+        >
+          {trend.direction === "up" ? (
+            <TrendingUp className="h-2.5 w-2.5" />
+          ) : (
+            <TrendingDown className="h-2.5 w-2.5" />
+          )}
+          {trend.direction === "up" ? "+" : "-"}
+          {trend.value}% vs yesterday
+        </span>
+      )}
     </motion.div>
   );
 }
 
 /* -------------------------------------------------- */
-/*  Call log row (stagger animation)                  */
+/*  CSS Bar chart (matches real dashboard)            */
 /* -------------------------------------------------- */
 
-function CallLogRow({
-  number,
-  status,
-  duration,
-  time,
-  index,
-}: {
-  number: string;
-  status: string;
-  duration: string;
-  time: string;
-  index: number;
-}) {
+const barData = [32, 45, 28, 62, 51, 73, 68, 55, 82, 76, 90, 65];
+
+function BarChart() {
+  const max = Math.max(...barData);
   return (
     <motion.div
-      className="glass flex items-center justify-between rounded-lg px-3 py-2 md:px-4 md:py-3"
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      className="glass-card p-3 md:p-4"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: 1.5 + index * 0.2 }}
+      transition={{ duration: 0.5, delay: 0.8 }}
     >
-      <div className="flex items-center gap-3">
-        <div className="h-2 w-2 rounded-full bg-success" />
-        <span className="text-xs font-medium text-foreground md:text-sm">
-          {number}
+      <div className="mb-2.5 flex items-center justify-between">
+        <span className="text-[10px] md:text-xs font-medium text-muted uppercase tracking-wider">
+          Call Volume
         </span>
+        <span className="text-[10px] md:text-xs text-muted">Last 7 days</span>
       </div>
-      <span className="text-xs text-muted hidden sm:inline">{status}</span>
-      <span className="text-xs text-muted">{duration}</span>
-      <span className="text-xs text-muted">{time}</span>
+      <div className="flex items-end gap-1 h-16 md:h-24">
+        {barData.map((val, i) => (
+          <motion.div
+            key={i}
+            className="flex-1 flex flex-col items-center justify-end h-full"
+          >
+            <motion.div
+              className="w-full rounded-t bg-primary/70 hover:bg-primary transition-colors min-h-[2px]"
+              initial={{ height: 0 }}
+              whileInView={{ height: `${(val / max) * 100}%` }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 1.0 + i * 0.05 }}
+            />
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 }
 
 /* -------------------------------------------------- */
-/*  Animated SVG chart                                */
+/*  Mini leaderboard table (Top Campaigns)            */
 /* -------------------------------------------------- */
 
-const CHART_LINE =
-  "M0 80 C30 70, 60 65, 80 55 C100 45, 130 50, 160 40 C190 30, 210 35, 240 25 C270 15, 290 20, 320 15 C350 10, 370 18, 400 10";
-const CHART_FILL =
-  "M0 80 C30 70, 60 65, 80 55 C100 45, 130 50, 160 40 C190 30, 210 35, 240 25 C270 15, 290 20, 320 15 C350 10, 370 18, 400 10 L400 100 L0 100 Z";
+const campaigns = [
+  { name: "Solar Leads", calls: 342, revenue: "$4,280", rate: "18.2%" },
+  { name: "Insurance Quotes", calls: 218, revenue: "$2,890", rate: "15.6%" },
+  { name: "Home Services", calls: 187, revenue: "$2,150", rate: "12.8%" },
+];
 
-function AnimatedChart() {
+function LeaderboardTable() {
   return (
-    <svg
-      className="h-24 w-full md:h-32"
-      viewBox="0 0 400 100"
-      preserveAspectRatio="none"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <motion.div
+      className="glass-card p-3 md:p-4"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 1.2 }}
     >
-      <defs>
-        <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
-        </linearGradient>
-      </defs>
+      <span className="text-[10px] md:text-xs font-medium text-muted uppercase tracking-wider">
+        Top Campaigns
+      </span>
+      <div className="mt-2 space-y-1.5">
+        {/* Header */}
+        <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-muted uppercase tracking-wider pb-1 border-b border-glass-border">
+          <span className="flex-1">Campaign</span>
+          <span className="w-12 text-right hidden sm:block">Calls</span>
+          <span className="w-14 text-right">Revenue</span>
+          <span className="w-12 text-right hidden md:block">Conv%</span>
+        </div>
+        {campaigns.map((c, i) => (
+          <motion.div
+            key={c.name}
+            className="flex items-center gap-2 text-[10px] md:text-xs py-1"
+            initial={{ opacity: 0, x: -12 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 1.4 + i * 0.15 }}
+          >
+            <span className="flex-1 text-foreground font-medium truncate">
+              {c.name}
+            </span>
+            <span className="w-12 text-right text-muted hidden sm:block">
+              {c.calls}
+            </span>
+            <span className="w-14 text-right text-foreground font-medium">
+              {c.revenue}
+            </span>
+            <span className="w-12 text-right text-emerald-500 hidden md:block">
+              {c.rate}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
-      {/* Fill area – fades in after line draws */}
-      <motion.path
-        d={CHART_FILL}
-        fill="url(#chart-gradient)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 2.2 }}
-      />
+/* -------------------------------------------------- */
+/*  Mini sidebar (icon-only, decorative)              */
+/* -------------------------------------------------- */
 
-      {/* Animated line drawing */}
-      <motion.path
-        d={CHART_LINE}
-        stroke="#6366f1"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ pathLength: { duration: 2, ease: "easeInOut" }, opacity: { duration: 0.3 } }}
-      />
+const sidebarItems = [
+  { icon: LayoutDashboard, active: true },
+  { icon: Megaphone, active: false },
+  { icon: Phone, active: false },
+  { icon: Radio, active: false },
+  { icon: Headphones, active: false },
+  { icon: Settings, active: false },
+];
 
-      {/* End-of-line dot – appears after line finishes */}
-      <motion.circle
-        cx="400"
-        cy="10"
-        r="4"
-        fill="#6366f1"
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 2.1 }}
-      />
-      <motion.circle
-        cx="400"
-        cy="10"
-        r="6"
-        fill="#6366f1"
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 0.3, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 2.1 }}
-      />
-    </svg>
+function MiniSidebar() {
+  return (
+    <div className="hidden sm:flex flex-col items-center w-11 md:w-12 shrink-0 border-r border-glass-border py-3 gap-1">
+      {/* Logo */}
+      <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 mb-3">
+        <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+      </div>
+      {/* Nav icons */}
+      {sidebarItems.map(({ icon: Icon, active }, i) => (
+        <div
+          key={i}
+          className={`flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg transition-colors ${
+            active
+              ? "bg-primary/10 text-primary"
+              : "text-muted hover:text-foreground"
+          }`}
+        >
+          <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------------------------- */
+/*  Mini header bar with live indicators              */
+/* -------------------------------------------------- */
+
+function MiniHeader() {
+  return (
+    <motion.div
+      className="flex items-center gap-3 md:gap-4 border-b border-glass-border px-3 py-2"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+    >
+      <div className="flex items-center gap-1.5">
+        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[10px] md:text-xs text-emerald-500 font-medium">
+          12 Live
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Phone className="h-2.5 w-2.5 text-primary" />
+        <span className="text-[10px] md:text-xs text-muted">847 Today</span>
+      </div>
+      <div className="flex items-center gap-1.5 hidden sm:flex">
+        <Headphones className="h-2.5 w-2.5 text-primary" />
+        <span className="text-[10px] md:text-xs text-muted">6 Agents</span>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <div className="glass rounded-full px-2 py-0.5 text-[10px] text-emerald-500 font-medium hidden md:block">
+          $1,240.50
+        </div>
+        <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-gradient-to-br from-indigo-400 to-violet-400 flex items-center justify-center">
+          <span className="text-[8px] md:text-[9px] text-white font-bold">
+            RP
+          </span>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
 /* -------------------------------------------------- */
 /*  Main dashboard mockup                             */
 /* -------------------------------------------------- */
-
-const callLogs = [
-  { number: "+1 (555) 234-8901", status: "Connected", duration: "4:32", time: "2m ago" },
-  { number: "+1 (555) 876-5432", status: "Connected", duration: "2:18", time: "5m ago" },
-  { number: "+1 (555) 019-7654", status: "Connected", duration: "6:45", time: "8m ago" },
-];
 
 export default function DashboardMockup() {
   return (
@@ -210,7 +303,7 @@ export default function DashboardMockup() {
       className="relative"
     >
       <div className="glass-panel overflow-hidden relative">
-        {/* ---- Shimmer scan line ---- */}
+        {/* Shimmer scan line */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[1.5rem] z-10">
           <div
             className="absolute inset-0"
@@ -223,130 +316,82 @@ export default function DashboardMockup() {
           />
         </div>
 
-        {/* ---- Faux browser chrome ---- */}
-        <div className="flex items-center gap-3 border-b border-glass-border px-4 py-3">
+        {/* Faux browser chrome */}
+        <div className="flex items-center gap-3 border-b border-glass-border px-4 py-2.5">
           <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-red-400 opacity-60" />
-            <div className="h-3 w-3 rounded-full bg-yellow-400 opacity-60" />
-            <div className="h-3 w-3 rounded-full bg-green-400 opacity-60" />
+            <div className="h-2.5 w-2.5 rounded-full bg-red-400 opacity-60" />
+            <div className="h-2.5 w-2.5 rounded-full bg-yellow-400 opacity-60" />
+            <div className="h-2.5 w-2.5 rounded-full bg-green-400 opacity-60" />
           </div>
           <div className="glass-pill mx-auto flex-1 max-w-xs px-4 py-1 text-center">
-            <span className="text-xs text-muted flex items-center justify-center gap-1.5">
+            <span className="text-[10px] md:text-xs text-muted flex items-center justify-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               dashboard.velocalls.com
             </span>
           </div>
-          <div className="w-[52px]" />
+          <div className="w-[42px]" />
         </div>
 
-        {/* ---- Dashboard content ---- */}
-        <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-          {/* Metric cards row */}
-          <div className="grid grid-cols-3 gap-3 md:gap-4">
-            <MetricCard
-              label="Calls Today"
-              delay={0.4}
-              indicator={
-                <svg
-                  className="h-4 w-4 text-success"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+        {/* Dashboard layout: sidebar + main */}
+        <div className="flex">
+          <MiniSidebar />
+
+          {/* Main content area */}
+          <div className="flex-1 min-w-0">
+            <MiniHeader />
+
+            <div className="p-3 md:p-4 space-y-3 md:space-y-4">
+              {/* 4 KPI stat cards matching real dashboard */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+                <StatCard
+                  icon={Phone}
+                  label="Calls Today"
+                  delay={0.4}
+                  trend={{ value: 12.3, direction: "up" }}
                 >
-                  <path
-                    d="M8 12V4M8 4L4 8M8 4L12 8"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              }
-            >
-              <AnimatedMetric value={2847} />
-            </MetricCard>
+                  <AnimatedMetric value={2847} />
+                </StatCard>
 
-            <MetricCard
-              label="Connect Rate"
-              delay={0.55}
-              indicator={
-                <div className="h-2.5 w-2.5 rounded-full bg-blue-400" />
-              }
-            >
-              <motion.span
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-              >
-                94.2%
-              </motion.span>
-            </MetricCard>
+                <StatCard
+                  icon={DollarSign}
+                  label="Revenue Today"
+                  delay={0.5}
+                  trend={{ value: 8.7, direction: "up" }}
+                >
+                  <AnimatedMetric value={12} prefix="$" suffix=".4K" />
+                </StatCard>
 
-            <MetricCard
-              label="Revenue"
-              delay={0.7}
-              indicator={
-                <div className="flex items-end gap-0.5">
-                  <div className="h-2 w-1 rounded-sm bg-purple-400 opacity-40" />
-                  <div className="h-3 w-1 rounded-sm bg-purple-400 opacity-60" />
-                  <div className="h-4 w-1 rounded-sm bg-purple-400 opacity-80" />
-                  <div className="h-3.5 w-1 rounded-sm bg-purple-400" />
-                  <div className="h-5 w-1 rounded-sm bg-purple-400" />
-                </div>
-              }
-            >
-              <motion.span
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.9 }}
-              >
-                $12.4K
-              </motion.span>
-            </MetricCard>
-          </div>
+                <StatCard
+                  icon={CheckCircle}
+                  label="Conversions"
+                  delay={0.6}
+                  trend={{ value: 5.2, direction: "up" }}
+                >
+                  <AnimatedMetric value={428} />
+                </StatCard>
 
-          {/* Chart area */}
-          <motion.div
-            className="glass-card p-4 md:p-6"
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-medium text-muted uppercase tracking-wider">
-                Call Volume
-              </span>
-              <span className="text-xs text-muted">Last 7 days</span>
+                <StatCard
+                  icon={Percent}
+                  label="Conv. Rate"
+                  delay={0.7}
+                >
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.9 }}
+                  >
+                    15.0%
+                  </motion.span>
+                </StatCard>
+              </div>
+
+              {/* Bar chart */}
+              <BarChart />
+
+              {/* Top campaigns table */}
+              <LeaderboardTable />
             </div>
-            <AnimatedChart />
-          </motion.div>
-
-          {/* Call log rows */}
-          <div className="space-y-2">
-            <motion.div
-              className="mb-2 flex items-center justify-between"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 1.3 }}
-            >
-              <span className="text-xs font-medium text-muted uppercase tracking-wider">
-                Recent Calls
-              </span>
-            </motion.div>
-            {callLogs.map((log, i) => (
-              <CallLogRow
-                key={log.number}
-                number={log.number}
-                status={log.status}
-                duration={log.duration}
-                time={log.time}
-                index={i}
-              />
-            ))}
           </div>
         </div>
       </div>
