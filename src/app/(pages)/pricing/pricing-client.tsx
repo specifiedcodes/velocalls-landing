@@ -2,8 +2,8 @@
  * Pricing Page Client Component (Story 39.4)
  *
  * Interactive pricing page with:
- * - Platform markup tier table
- * - BYOC platform fee tier table
+ * - Platform per-minute tier table
+ * - BYOC per-minute tier table
  * - Add-on services
  * - Cost calculator for both modes
  */
@@ -23,57 +23,57 @@ import {
 } from 'lucide-react';
 
 // ============================================
-// Static Pricing Data (from Spec Section 10)
+// Static Pricing Data
 // ============================================
 
-const MARKUP_TIERS = [
+const PLATFORM_TIERS = [
   {
-    name: 'Tier 1',
-    spendRange: '$0 - $500',
-    markupPercent: 20,
+    name: 'Starter',
+    minuteRange: '0 - 10,000',
+    ratePerMinute: 4.0,
     description: 'Standard rate for getting started.',
   },
   {
-    name: 'Tier 2',
-    spendRange: '$500 - $2,000',
-    markupPercent: 15,
+    name: 'Growth',
+    minuteRange: '10,000 - 50,000',
+    ratePerMinute: 3.0,
     description: 'Volume rate for growing businesses.',
   },
   {
-    name: 'Tier 3',
-    spendRange: '$2,000 - $10,000',
-    markupPercent: 10,
+    name: 'Scale',
+    minuteRange: '50,000 - 200,000',
+    ratePerMinute: 2.5,
     description: 'High volume rate for scaling teams.',
   },
   {
-    name: 'Tier 4',
-    spendRange: '$10,000+',
-    markupPercent: 5,
+    name: 'Enterprise',
+    minuteRange: '200,000+',
+    ratePerMinute: 2.0,
     description: 'Enterprise rate for maximum savings.',
   },
 ];
 
 const PLATFORM_FEE_TIERS = [
   {
-    name: 'BYOC Tier 1',
+    name: 'Starter',
     minuteRange: '0 - 10,000',
     feePerMinute: 2.0,
     description: 'Standard BYOC rate.',
   },
   {
-    name: 'BYOC Tier 2',
+    name: 'Growth',
     minuteRange: '10,000 - 50,000',
     feePerMinute: 1.5,
     description: 'Volume BYOC rate.',
   },
   {
-    name: 'BYOC Tier 3',
+    name: 'Scale',
     minuteRange: '50,000 - 200,000',
     feePerMinute: 1.0,
     description: 'High volume BYOC rate.',
   },
   {
-    name: 'BYOC Tier 4',
+    name: 'Enterprise',
     minuteRange: '200,000+',
     feePerMinute: 0.5,
     description: 'Enterprise BYOC rate.',
@@ -115,9 +115,6 @@ const ADDON_SERVICES = [
   },
 ];
 
-// Average carrier cost per minute in dollars (platform mode estimate)
-const AVG_CARRIER_COST_PER_MINUTE_DOLLARS = 0.01; // $0.01/min average
-
 // ============================================
 // Calculator Logic
 // ============================================
@@ -126,39 +123,29 @@ interface TierEstimate {
   tierName: string;
   rate: number;
   rateLabel: string;
-  monthlyCarrierCost: number;
-  monthlyMarkup: number;
   monthlyTotal: number;
   isCurrentTier: boolean;
 }
 
 function calculatePlatformEstimates(minutes: number): TierEstimate[] {
-  const carrierCost = minutes * AVG_CARRIER_COST_PER_MINUTE_DOLLARS;
-
-  // Determine which tier this volume falls into based on carrier cost in cents
-  // Spec thresholds: $500 (50000 cents), $2000 (200000 cents), $10000 (1000000 cents)
-  const carrierCostCents = carrierCost * 100;
   let currentTierIdx = 0;
-  if (carrierCostCents >= 1000000) currentTierIdx = 3;
-  else if (carrierCostCents >= 200000) currentTierIdx = 2;
-  else if (carrierCostCents >= 50000) currentTierIdx = 1;
+  if (minutes >= 200000) currentTierIdx = 3;
+  else if (minutes >= 50000) currentTierIdx = 2;
+  else if (minutes >= 10000) currentTierIdx = 1;
 
-  return MARKUP_TIERS.map((tier, idx) => {
-    const markup = carrierCost * (tier.markupPercent / 100);
+  return PLATFORM_TIERS.map((tier, idx) => {
+    const total = (minutes * tier.ratePerMinute) / 100;
     return {
       tierName: tier.name,
-      rate: tier.markupPercent,
-      rateLabel: `${tier.markupPercent}% markup`,
-      monthlyCarrierCost: carrierCost,
-      monthlyMarkup: markup,
-      monthlyTotal: carrierCost + markup,
+      rate: tier.ratePerMinute,
+      rateLabel: `${tier.ratePerMinute} cents/min`,
+      monthlyTotal: total,
       isCurrentTier: idx === currentTierIdx,
     };
   });
 }
 
 function calculateByocEstimates(minutes: number): TierEstimate[] {
-  // Determine which tier this volume falls into
   let currentTierIdx = 0;
   if (minutes >= 200000) currentTierIdx = 3;
   else if (minutes >= 50000) currentTierIdx = 2;
@@ -170,8 +157,6 @@ function calculateByocEstimates(minutes: number): TierEstimate[] {
       tierName: tier.name,
       rate: tier.feePerMinute,
       rateLabel: `${tier.feePerMinute} cents/min`,
-      monthlyCarrierCost: 0,
-      monthlyMarkup: 0,
       monthlyTotal: total,
       isCurrentTier: idx === currentTierIdx,
     };
@@ -211,7 +196,7 @@ export function PricingPageClient() {
           </h1>
           <p className="mt-4 text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             The more you use, the cheaper it gets. No hidden fees, no surprises.
-            Just straightforward carrier cost plus a decreasing markup.
+            Simple per-minute pricing that drops as your usage grows.
           </p>
           <div className="mt-8 flex items-center justify-center gap-4">
             <a
@@ -242,16 +227,16 @@ export function PricingPageClient() {
               Platform Mode
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Carrier Cost + Markup
+              Managed Carriers
             </h2>
             <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              We pass through the actual carrier cost and add a markup that decreases
-              as your monthly spend grows.
+              All-inclusive per-minute pricing. Your rate drops automatically as your
+              lifetime usage grows.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {MARKUP_TIERS.map((tier, idx) => (
+            {PLATFORM_TIERS.map((tier, idx) => (
               <div
                 key={tier.name}
                 className={`relative rounded-xl border p-6 transition-shadow hover:shadow-lg ${
@@ -272,17 +257,17 @@ export function PricingPageClient() {
                   {tier.name}
                 </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Monthly carrier spend
+                  Lifetime minutes
                 </p>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {tier.spendRange}
+                  {tier.minuteRange}
                 </p>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                    {tier.markupPercent}%
+                    {tier.ratePerMinute}¢
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
-                    markup
+                    /min
                   </span>
                 </div>
                 <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
@@ -310,7 +295,7 @@ export function PricingPageClient() {
             </h2>
             <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Connect your own SIP trunks and pay only a flat platform fee per minute.
-              Zero carrier cost markup.
+              Your rate drops as lifetime usage grows.
             </p>
           </div>
 
@@ -325,7 +310,7 @@ export function PricingPageClient() {
                   {tier.name}
                 </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Monthly minutes
+                  Lifetime minutes
                 </p>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {tier.minuteRange}
@@ -471,7 +456,7 @@ export function PricingPageClient() {
                     </h3>
                   </div>
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Carrier cost + markup (avg $0.01/min carrier cost)
+                    All-inclusive per-minute rate
                   </p>
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">

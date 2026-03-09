@@ -7,23 +7,23 @@ import { cn } from "@/lib/utils";
 import { DASHBOARD_URL } from "@/lib/config";
 
 /* -------------------------------------------------- */
-/*  Tier data — rates based on cumulative spend       */
+/*  Tier data — per-minute rates based on lifetime minutes */
 /* -------------------------------------------------- */
 
 type Mode = "platform" | "byoc";
 
 interface Tier {
   label: string;
-  rate: number; // % fee or cents/min
-  min: number;
+  rate: number; // cents per minute
+  min: number;  // lifetime minutes threshold
   max: number | null;
 }
 
 const PLATFORM_TIERS: Tier[] = [
-  { label: "Starter", rate: 20, min: 0, max: 500 },
-  { label: "Growth", rate: 15, min: 500, max: 2000 },
-  { label: "Scale", rate: 10, min: 2000, max: 10000 },
-  { label: "Enterprise", rate: 5, min: 10000, max: null },
+  { label: "Starter", rate: 4.0, min: 0, max: 10000 },
+  { label: "Growth", rate: 3.0, min: 10000, max: 50000 },
+  { label: "Scale", rate: 2.5, min: 50000, max: 200000 },
+  { label: "Enterprise", rate: 2.0, min: 200000, max: null },
 ];
 
 const BYOC_TIERS: Tier[] = [
@@ -39,8 +39,8 @@ const ADDONS = [
   { name: "AI Summary", rate: "10¢/call", icon: Brain },
 ];
 
-/* Slider stops — represent cumulative lifetime spend / minutes */
-const PLATFORM_STOPS = [0, 100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000, 12500, 15000];
+/* Slider stops — represent cumulative lifetime minutes */
+const PLATFORM_STOPS = [0, 2000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 250000, 300000];
 const BYOC_STOPS = [0, 2000, 5000, 10000, 25000, 50000, 100000, 150000, 200000, 250000, 300000];
 
 /* -------------------------------------------------- */
@@ -52,11 +52,6 @@ function getCurrentTier(tiers: Tier[], value: number): Tier {
     if (value >= tiers[i].min) return tiers[i];
   }
   return tiers[0];
-}
-
-function formatCurrency(val: number): string {
-  if (val >= 1000) return `$${(val / 1000).toFixed(val % 1000 === 0 ? 0 : 1)}K`;
-  return `$${val.toLocaleString()}`;
 }
 
 function formatMinutes(val: number): string {
@@ -82,9 +77,7 @@ function TierSteps({
       {tiers.map((tier) => {
         const isActive = tier.label === activeTier.label;
         const rangeLabel =
-          mode === "platform"
-            ? `${formatCurrency(tier.min)}${tier.max ? ` – ${formatCurrency(tier.max)}` : "+"}`
-            : `${formatMinutes(tier.min)}${tier.max ? ` – ${formatMinutes(tier.max)}` : "+"} min`;
+          `${formatMinutes(tier.min)}${tier.max ? ` – ${formatMinutes(tier.max)}` : "+"} min`;
 
         return (
           <motion.div
@@ -108,10 +101,10 @@ function TierSteps({
                 isActive ? "text-primary" : "text-muted"
               )}
             >
-              {mode === "platform" ? `${tier.rate}%` : `${tier.rate}¢`}
+              {tier.rate}¢
             </div>
             <div className="text-[10px] md:text-xs text-muted mt-1">
-              {mode === "platform" ? "service fee" : "/min"}
+              /min
             </div>
             <div className="text-[10px] md:text-xs text-muted mt-2 hidden sm:block">
               {rangeLabel}
@@ -129,34 +122,24 @@ function TierSteps({
 
 export default function PricingSection() {
   const [mode, setMode] = useState<Mode>("platform");
-  const [sliderIndex, setSliderIndex] = useState(4);
+  const [sliderIndex, setSliderIndex] = useState(3);
 
   const stops = mode === "platform" ? PLATFORM_STOPS : BYOC_STOPS;
   const tiers = mode === "platform" ? PLATFORM_TIERS : BYOC_TIERS;
   const value = stops[sliderIndex] ?? stops[0];
   const currentTier = useMemo(() => getCurrentTier(tiers, value), [tiers, value]);
 
-  // Calculate example monthly cost at this rate
+  // Calculate example cost at this rate (10K minutes example)
+  const baseTiers = mode === "platform" ? PLATFORM_TIERS : BYOC_TIERS;
   const { exampleCost, savingsPercent } = useMemo(() => {
-    // Use a fixed example month ($1000 spend or 10000 min) to show rate impact
-    if (mode === "platform") {
-      const exampleSpend = 1000; // example $1K carrier cost in a month
-      const fee = exampleSpend * (currentTier.rate / 100);
-      const baseFee = exampleSpend * (PLATFORM_TIERS[0].rate / 100);
-      const savings = currentTier.rate < PLATFORM_TIERS[0].rate
-        ? Math.round((1 - fee / baseFee) * 100)
-        : 0;
-      return { exampleCost: fee, savingsPercent: savings };
-    } else {
-      const exampleMin = 10000;
-      const cost = (exampleMin * currentTier.rate) / 100;
-      const baseCost = (exampleMin * BYOC_TIERS[0].rate) / 100;
-      const savings = currentTier.rate < BYOC_TIERS[0].rate
-        ? Math.round((1 - cost / baseCost) * 100)
-        : 0;
-      return { exampleCost: cost, savingsPercent: savings };
-    }
-  }, [mode, currentTier]);
+    const exampleMin = 10000;
+    const cost = (exampleMin * currentTier.rate) / 100;
+    const baseCost = (exampleMin * baseTiers[0].rate) / 100;
+    const savings = currentTier.rate < baseTiers[0].rate
+      ? Math.round((1 - cost / baseCost) * 100)
+      : 0;
+    return { exampleCost: cost, savingsPercent: savings };
+  }, [mode, currentTier, baseTiers]);
 
   return (
     <section id="pricing" className="section-padding relative overflow-hidden">
@@ -177,8 +160,8 @@ export default function PricingSection() {
             <span className="gradient-text">Save As You Grow</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-            Pure usage-based pricing. Your rate drops automatically as your
-            lifetime spend grows — and it never goes back up.
+            Simple per-minute pricing. Your rate drops automatically as your
+            usage grows — and it never goes back up.
           </p>
         </motion.div>
 
@@ -194,7 +177,7 @@ export default function PricingSection() {
             <button
               onClick={() => {
                 setMode("platform");
-                setSliderIndex(4);
+                setSliderIndex(3);
               }}
               className={cn(
                 "px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2",
@@ -235,14 +218,10 @@ export default function PricingSection() {
           {/* Slider label */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-muted">
-              {mode === "platform"
-                ? "Your Lifetime Spend"
-                : "Your Lifetime Minutes"}
+              Your Lifetime Minutes
             </span>
             <span className="text-lg md:text-xl font-bold text-foreground">
-              {mode === "platform"
-                ? formatCurrency(value)
-                : `${value.toLocaleString()} min`}
+              {formatMinutes(value)} min
               {value === stops[stops.length - 1] ? "+" : ""}
             </span>
           </div>
@@ -264,18 +243,13 @@ export default function PricingSection() {
                   (_, i) =>
                     i === 0 ||
                     i === stops.length - 1 ||
-                    stops[i] ===
-                      (mode === "platform" ? 500 : 10000) ||
-                    stops[i] ===
-                      (mode === "platform" ? 2000 : 50000) ||
-                    stops[i] ===
-                      (mode === "platform" ? 10000 : 200000)
+                    stops[i] === 10000 ||
+                    stops[i] === 50000 ||
+                    stops[i] === 200000
                 )
                 .map((stop) => (
                   <span key={stop} className="text-[10px] text-muted">
-                    {mode === "platform"
-                      ? formatCurrency(stop)
-                      : formatMinutes(stop)}
+                    {formatMinutes(stop)}
                     {stop === stops[stops.length - 1] ? "+" : ""}
                   </span>
                 ))}
@@ -292,12 +266,10 @@ export default function PricingSection() {
                 transition={{ duration: 0.3 }}
                 className="text-2xl md:text-3xl font-extrabold text-primary"
               >
-                {mode === "platform"
-                  ? `${currentTier.rate}%`
-                  : `${currentTier.rate}¢`}
+                {currentTier.rate}¢
               </motion.div>
               <div className="text-xs text-muted mt-1">
-                {mode === "platform" ? "Your Rate" : "Per Minute"}
+                Per Minute
               </div>
             </div>
 
@@ -312,9 +284,7 @@ export default function PricingSection() {
                 ${exampleCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </motion.div>
               <div className="text-xs text-muted mt-1">
-                {mode === "platform"
-                  ? "Fee on $1K spend"
-                  : "Fee on 10K min"}
+                Cost for 10K min
               </div>
             </div>
 
@@ -385,8 +355,7 @@ export default function PricingSection() {
             <ArrowRight className="h-5 w-5" />
           </a>
           <p className="text-sm text-muted mt-4">
-            Your rate drops as your lifetime spend grows — and never goes back
-            up.
+            Your rate drops as your usage grows — and never goes back up.
           </p>
         </motion.div>
       </div>
