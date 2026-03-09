@@ -40,12 +40,12 @@ export default function CTABanner() {
             <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Ready to Transform Your
               <br />
-              Call Business?
+              Call Center?
             </h2>
 
             <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-              Join hundreds of businesses already using VeloCalls to track,
-              route, and optimize their calls with AI-powered intelligence.
+              Join hundreds of call centers and sales teams already using
+              VeloCalls to track, route, and optimize every call with AI.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

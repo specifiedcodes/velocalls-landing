@@ -151,7 +151,7 @@ export default function FeaturesSection() {
           </span>
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl md:text-5xl">
             Everything You Need to{" "}
-            <span className="gradient-text">Scale Your Call Business</span>
+            <span className="gradient-text">Run Your Call Center</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
             From intelligent routing to AI-powered analytics, VeloCalls gives

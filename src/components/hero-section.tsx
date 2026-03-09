@@ -88,9 +88,9 @@ export default function HeroSection() {
               variants={itemVariants}
               className="text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl"
             >
-              Intelligent Call Tracking
+              The All-in-One Platform
               <br />
-              <span className="gradient-text">for Growing Businesses</span>
+              <span className="gradient-text">for Call Centers & Sales Teams</span>
             </motion.h1>
 
             {/* Subline */}
@@ -98,9 +98,9 @@ export default function HeroSection() {
               variants={itemVariants}
               className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
             >
-              Route calls intelligently, bid in real-time, build visual IVR
-              flows, and unlock AI-powered conversation intelligence. All in one
-              platform.
+              Track, route, and optimize every call. Built-in agents, real-time
+              bidding, visual IVR builder, and AI-powered conversation
+              intelligence — with AI sales agents coming soon.
             </motion.p>
 
             {/* CTAs */}

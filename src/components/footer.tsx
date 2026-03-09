@@ -44,8 +44,8 @@ export default function Footer() {
               </span>
             </a>
             <p className="text-sm leading-relaxed text-muted max-w-xs">
-              The enterprise call tracking and routing platform built for
-              performance marketers. Track, route, bid, and optimize every call.
+              The all-in-one call tracking and routing platform for call
+              centers, sales teams, and marketers. AI agents coming soon.
             </p>
           </div>
 

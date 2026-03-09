@@ -40,7 +40,7 @@ export default function TestimonialsSection() {
             <span className="gradient-text">Industry Leaders</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-            See what performance marketing professionals say about VeloCalls.
+            See what call center operators and marketing teams say about VeloCalls.
           </p>
         </motion.div>
 
