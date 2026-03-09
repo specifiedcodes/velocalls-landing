@@ -23,7 +23,7 @@ export default function CTABanner() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="relative overflow-visible rounded-3xl"
+          className="relative overflow-hidden rounded-3xl"
         >
           {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700" />
