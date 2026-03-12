@@ -11,10 +11,11 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "VeloCalls — Intelligent Call Tracking & Routing Platform",
   description:
-    "Route calls intelligently, bid in real-time, build visual IVR flows, and power your call center with AI agents. The all-in-one call tracking and routing platform for call centers, sales teams, and performance marketers.",
+    "Route calls intelligently, bid in real-time, build visual IVR flows, and power your contact center with AI agents. The all-in-one call tracking and routing platform for contact centers, sales teams, and performance marketers.",
   keywords: [
     "call tracking",
     "call routing",
+    "contact center software",
     "call center software",
     "IVR builder",
     "real-time bidding",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VeloCalls — Intelligent Call Tracking & Routing Platform",
     description:
-      "Route calls intelligently, bid in real-time, build visual IVR flows, and power your call center with AI agents.",
+      "Route calls intelligently, bid in real-time, build visual IVR flows, and power your contact center with AI agents.",
     type: "website",
     locale: "en_US",
   },

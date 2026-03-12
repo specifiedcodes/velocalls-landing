@@ -38,7 +38,7 @@ const openPositions = [
     location: "New York, NY / Remote",
     type: "Full-time",
     description:
-      "Drive new business by selling VeloCalls to mid-market performance marketing agencies and call centers. 3+ years of SaaS sales experience required.",
+      "Drive new business by selling VeloCalls to mid-market performance marketing agencies and contact centers. 3+ years of SaaS sales experience required.",
   },
 ];
 

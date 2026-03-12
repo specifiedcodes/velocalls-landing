@@ -119,7 +119,7 @@ export default function PartnersPage() {
             Trusted by Leading Companies
           </h2>
           <p className="text-muted mb-12 max-w-xl mx-auto">
-            Our partners include performance marketing agencies, technology platforms, and call centers
+            Our partners include performance marketing agencies, technology platforms, and contact centers
             across North America and Europe.
           </p>
           <div className="glass-card p-12">

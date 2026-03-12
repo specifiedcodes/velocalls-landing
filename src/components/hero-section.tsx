@@ -90,7 +90,7 @@ export default function HeroSection() {
             >
               The All-in-One Platform
               <br />
-              <span className="gradient-text">for Call Centers & Sales Teams</span>
+              <span className="gradient-text">for Contact Centers & Revenue Teams</span>
             </motion.h1>
 
             {/* Subline */}

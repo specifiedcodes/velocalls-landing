@@ -40,11 +40,11 @@ export default function CTABanner() {
             <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Ready to Transform Your
               <br />
-              Call Center?
+              Contact Center?
             </h2>
 
             <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-              Join hundreds of call centers and sales teams already using
+              Join hundreds of contact centers and sales teams already using
               VeloCalls to track, route, and optimize every call with AI.
             </p>
 
