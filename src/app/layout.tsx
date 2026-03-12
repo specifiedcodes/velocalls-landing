@@ -57,6 +57,21 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* JustAnalytics — Frontend Analytics */}
+        <script
+          defer
+          src="https://justanalytics.app/tracker.js"
+          data-site-id="cmmn9e86i2cx9pmiv5bbofer1"
+        />
+        {/* JustAnalytics — Frontend Monitoring (errors, performance) */}
+        <script
+          defer
+          src="https://justanalytics.app/monitor.js"
+          data-site-id="cmm243y5u96o512kt838ipjq7"
+          data-environment="production"
+          data-release="v1.0.0"
+          data-sample-rate="1.0"
+        />
       </head>
       <body className={`${jakarta.variable} font-sans antialiased`}>
         {children}
