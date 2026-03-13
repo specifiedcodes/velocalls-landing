@@ -66,7 +66,6 @@ export default function RootLayout({
         />
         {/* JustAnalytics — Frontend Monitoring (errors, performance) */}
         <script
-          defer
           src="https://justanalytics.app/monitor.js"
           data-site-id="cmmn9e86i2cx9pmiv5bbofer1"
           data-environment="production"
