@@ -1,0 +1,223 @@
+---
+title: "How to Set Up Call Tracking for Your Business (Step-by-Step)"
+excerpt: "A practical, step-by-step guide to implementing call tracking -- from choosing a platform and provisioning numbers to configuring routing rules and measuring ROI."
+date: "2026-03-08"
+category: "Tutorial"
+tags: ["call tracking", "setup guide", "tutorial", "analytics"]
+author: "alex-morgan"
+---
+
+# How to Set Up Call Tracking for Your Business (Step-by-Step)
+
+If phone calls matter to your business, you need call tracking. Without it, you are flying blind -- spending money on ads, SEO, and content with no way to know which efforts are actually generating calls and revenue.
+
+Call tracking connects every inbound call to the marketing source that drove it. It tells you which Google Ads keyword, which landing page, which billboard, or which affiliate publisher generated each call. With that data, you can double down on what works and cut what does not.
+
+This guide walks you through setting up call tracking from scratch, step by step.
+
+## Step 1: Choose a Call Tracking Platform
+
+Not all call tracking platforms are created equal. The right choice depends on your business model and scale.
+
+### What to Look For
+
+**Number provisioning.** The platform should let you provision local and toll-free tracking numbers quickly. If you operate nationally, you need numbers in multiple area codes. If you run pay-per-call campaigns, you need the ability to assign unique numbers to individual publishers.
+
+**Dynamic number insertion (DNI).** For website tracking, the platform must support DNI, which dynamically swaps the phone number displayed on your site based on the visitor's traffic source.
+
+**Call routing.** You need configurable routing rules -- time-of-day routing, geographic routing, round-robin distribution, weighted routing, and overflow handling. Advanced platforms like VeloCalls also support real-time bidding (RTB), where calls are routed to the highest bidder among multiple buyers.
+
+**Recording and transcription.** Call recording is essential for quality assurance. AI-powered transcription makes recordings searchable and enables automated call scoring.
+
+**Integrations.** Your call tracking platform should integrate with Google Ads, Google Analytics, your CRM, and any other tools in your marketing stack.
+
+**Reporting and analytics.** Real-time dashboards, conversion tracking, publisher-level reporting, and exportable data are all essential.
+
+VeloCalls covers all of these capabilities in a single platform, which simplifies setup and eliminates the need to stitch together multiple tools.
+
+## Step 2: Provision Your Tracking Numbers
+
+Once you have chosen a platform, the next step is getting your tracking phone numbers.
+
+### Types of Tracking Numbers
+
+**Static tracking numbers** are assigned to a specific campaign, channel, or publisher. For example, you might use one number on your Google Business Profile, another on a billboard, and another for a specific affiliate. Every call to that number is attributed to that source.
+
+**Dynamic tracking numbers** are used with DNI on your website. A pool of numbers rotates based on visitor sessions, so each visitor sees a unique number. This lets you attribute calls to specific ad clicks, search keywords, or referral sources.
+
+### How Many Numbers Do You Need?
+
+For offline campaigns (print, radio, TV, billboards), you need one static number per source you want to track separately.
+
+For website tracking with DNI, you need a pool of numbers. The size of the pool depends on your concurrent website traffic. A good starting point is 10 to 20 numbers for most small to mid-sized businesses. High-traffic sites may need more.
+
+For pay-per-call campaigns, you typically assign one or more numbers per publisher so you can track performance at the source level.
+
+### Choosing Local vs. Toll-Free
+
+Local numbers with area codes matching your service area build trust and increase answer rates. Toll-free numbers (800, 888, etc.) convey a national presence. Many businesses use both -- local numbers for geo-targeted campaigns and toll-free numbers for national campaigns.
+
+## Step 3: Set Up Dynamic Number Insertion (DNI)
+
+DNI is the backbone of website call tracking. It replaces the phone number on your website with a tracking number based on how the visitor arrived.
+
+### How DNI Works
+
+1. A visitor lands on your website from a Google Ads click.
+2. The DNI script detects the traffic source (Google Ads, organic search, direct, referral, etc.) and the specific campaign, keyword, or ad group.
+3. The script swaps the phone number displayed on your site with a tracking number from your pool.
+4. The visitor calls that number. The platform records the call and attributes it to the Google Ads click, including the specific keyword and campaign.
+5. When the visitor's session ends, the number returns to the pool for the next visitor.
+
+### Implementation
+
+Most platforms provide a JavaScript snippet that you add to your website. The snippet is typically a few lines of code placed in your site's header or before the closing body tag.
+
+On VeloCalls, the DNI setup involves adding a single script tag to your site and configuring which number on your page should be swapped. The platform handles the rest -- pool management, session tracking, and source attribution.
+
+If you use a tag manager like Google Tag Manager, you can deploy the DNI script through your container without touching your site's source code directly.
+
+### Tips for DNI Setup
+
+- Make sure the script loads on every page, not just your homepage.
+- Test that the number swaps correctly across all pages and devices (desktop, mobile, tablet).
+- If your site is a single-page application (React, Next.js, Vue), confirm that the DNI script handles client-side navigation correctly.
+- Set appropriate session timeouts. A number should stay assigned to a visitor for the duration of their session, typically 30 minutes of inactivity.
+
+## Step 4: Configure Call Routing Rules
+
+Call routing determines where each call goes once it reaches your tracking number. Proper routing ensures calls reach the right person at the right time.
+
+### Basic Routing Options
+
+**Simultaneous ring.** Ring multiple agents or locations at once. The first to answer gets the call. Good for small teams.
+
+**Round-robin.** Distribute calls evenly among agents. Each new call goes to the next agent in the rotation.
+
+**Weighted distribution.** Send a higher percentage of calls to specific agents or locations. Useful when some agents have higher close rates or more capacity.
+
+**Sequential routing.** Try agents in order. If the first does not answer within a set time, the call moves to the next.
+
+### Advanced Routing Options
+
+**Time-of-day routing.** Route calls to different destinations based on the time of day or day of the week. Send calls to your main office during business hours and to an after-hours answering service in the evening.
+
+**Geographic routing.** Route callers to the nearest office or service area based on their area code or caller ID location.
+
+**IVR-based routing.** Use an interactive voice response menu to qualify and route callers. For example, "Press 1 for sales, press 2 for support" or "What type of insurance are you looking for?"
+
+**Capacity-based routing.** Set concurrency limits per destination. If an agent is already on a call, route the next call to someone who is available. VeloCalls supports concurrency caps and queue management to prevent calls from going to voicemail.
+
+**RTB routing.** In pay-per-call scenarios, real-time bidding routes each call to the advertiser willing to pay the most for it, based on caller attributes like location, time, and campaign source. This is a core feature in VeloCalls for networks and marketplaces.
+
+## Step 5: Enable Call Recording and Transcription
+
+Call recording serves two purposes: quality assurance and training. Transcription makes recording data actionable at scale.
+
+### Setting Up Recording
+
+Most call tracking platforms enable recording by default or with a simple toggle. Key considerations include:
+
+**Consent and compliance.** Many states require two-party consent for call recording. Your IVR or greeting message should include a disclosure like "This call may be recorded for quality assurance purposes." Some states (like California) require all-party consent. Know your legal obligations.
+
+**Storage and retention.** Decide how long to keep recordings. Many businesses retain recordings for 30 to 90 days. Regulated industries may require longer retention.
+
+**Access controls.** Limit who can listen to recordings. Managers and QA teams typically need access, but not every employee should.
+
+### Setting Up Transcription
+
+AI-powered transcription converts your call recordings into searchable text. This enables several powerful capabilities.
+
+**Keyword spotting.** Automatically flag calls where specific words or phrases are mentioned -- competitor names, pricing objections, compliance-sensitive language, or buying signals.
+
+**Call scoring.** Assign quality scores to calls based on transcription analysis. Did the caller express strong intent? Did the agent follow the script? Was the caller a qualified lead?
+
+**Trend analysis.** Aggregate transcription data across hundreds or thousands of calls to identify patterns. What objections come up most frequently? Which products generate the most interest?
+
+VeloCalls includes AI transcription as part of its call tracking stack, so you do not need a separate transcription service.
+
+## Step 6: Integrate with Google Ads and Your CRM
+
+Call tracking data is most valuable when it connects to your other marketing and sales systems.
+
+### Google Ads Integration
+
+Linking call tracking to Google Ads lets you see which campaigns, ad groups, and keywords generate phone calls, not just clicks.
+
+1. **Import call conversions.** Configure your call tracking platform to send conversion data back to Google Ads. This tells Google which keywords and ads led to qualified calls.
+
+2. **Enable auto-tagging.** Make sure Google Ads auto-tagging (gclid) is enabled. Your DNI script captures the gclid parameter and associates it with the call.
+
+3. **Set conversion values.** If you know the average value of a call, set it in Google Ads so you can optimize for return on ad spend (ROAS), not just call volume.
+
+4. **Use Smart Bidding.** Once Google Ads has enough call conversion data (typically 30 or more conversions per month), you can use Smart Bidding strategies like Target CPA or Target ROAS to automatically optimize bids for calls.
+
+### CRM Integration
+
+Pushing call data into your CRM (Salesforce, HubSpot, Zoho, etc.) creates a complete view of the customer journey.
+
+- When a call comes in, automatically create a lead or contact record in your CRM.
+- Attach the call recording and transcription to the record.
+- Include the marketing source, keyword, and campaign so your sales team sees where the lead came from.
+- Track the lead through your sales pipeline to calculate true ROI from call to closed deal.
+
+Most call tracking platforms support CRM integration through native connectors, Zapier, or API. VeloCalls provides a REST API and webhook system that can push call events to virtually any CRM or data warehouse.
+
+### Google Analytics Integration
+
+Send call events to Google Analytics as goals or conversions. This lets you see call data alongside your other website metrics -- bounce rate, session duration, pages per visit -- in a single dashboard.
+
+## Step 7: Measure ROI and Optimize
+
+Setting up call tracking is not the finish line. The real value comes from using the data to improve performance.
+
+### Build Your Call Tracking Dashboard
+
+Your dashboard should answer these questions at a glance:
+
+- How many calls did we receive today, this week, this month?
+- What is the breakdown by source (paid search, organic, referral, affiliate)?
+- What is the conversion rate (qualified calls divided by total calls)?
+- What is the average call duration?
+- What is the cost per qualified call by source?
+- What is the revenue per call?
+
+### Optimize by Source
+
+Compare the cost and quality of calls from each marketing channel. You may find that Google Ads generates high-volume but lower-quality calls, while SEO generates fewer but higher-converting calls. Adjust your budget allocation accordingly.
+
+### Optimize by Keyword
+
+If you are running paid search, drill into keyword-level data. Some keywords generate calls that convert at 50 percent, while others generate calls that never convert. Pause underperforming keywords and increase bids on high-performers.
+
+### Optimize by Time of Day
+
+Analyze when your highest-quality calls come in. If calls between 10 AM and 2 PM convert at twice the rate of evening calls, consider increasing your ad spend during those hours and reducing it during off-peak times.
+
+### Optimize Agent Performance
+
+Use call recordings and transcriptions to evaluate how agents handle calls. Identify top performers and train the rest of the team on their techniques. Track metrics like answer rate, average handle time, and close rate per agent.
+
+### A/B Test Landing Pages
+
+Run experiments on your landing pages. Test different headlines, calls to action, phone number placement, and page layouts. Measure which version generates more calls and higher-quality calls.
+
+## Common Setup Pitfalls
+
+**Not testing the full call flow.** Before launching, call every tracking number yourself. Verify that the call routes correctly, recording works, the correct source is attributed, and the caller experience is smooth.
+
+**Using too few DNI numbers.** If your number pool runs out during traffic spikes, some visitors will see your static number instead of a tracking number, and those calls will not be attributed. Monitor your pool utilization and add numbers as needed.
+
+**Forgetting mobile.** More than half of calls come from mobile devices. Make sure your tracking numbers are click-to-call enabled on mobile, and test the experience on both iOS and Android.
+
+**Ignoring spam calls.** Tracking numbers will receive robocalls and spam just like any phone number. Use caller ID filtering and duration thresholds to exclude these from your reports.
+
+**Not reviewing data regularly.** Call tracking is not a set-and-forget tool. Schedule a weekly review of your call data to catch issues early and identify optimization opportunities.
+
+## Summary
+
+Setting up call tracking does not need to be complicated. The key steps are straightforward: choose a platform, provision your numbers, install DNI on your website, configure routing rules, enable recording and transcription, integrate with your ad platforms and CRM, and then use the data to optimize.
+
+The businesses that track their calls make better marketing decisions, close more deals, and waste less money on channels that do not perform. If you are ready to start, VeloCalls offers everything covered in this guide -- tracking numbers, DNI, advanced routing, IVR, recording, AI transcription, and integrations -- in a single platform built for both direct advertisers and pay-per-call networks.
+
+Start tracking your calls today, and stop guessing where your best leads come from.

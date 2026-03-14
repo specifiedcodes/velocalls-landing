@@ -30,6 +30,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "https://velocalls.com/feed.xml",
+    },
+  },
 };
 
 export default function RootLayout({
