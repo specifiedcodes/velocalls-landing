@@ -13,6 +13,7 @@ export interface BlogPost {
   category: string;
   tags: string[];
   author: Author;
+  authorSlug: string;
   readTime: string;
   coverImage?: string;
   content: string;
@@ -21,21 +22,29 @@ export interface BlogPost {
 export interface Author {
   name: string;
   role: string;
+  slug: string;
+  bio: string;
   avatar?: string;
 }
 
 export const AUTHORS: Record<string, Author> = {
   "velocalls-team": {
     name: "VeloCalls Team",
+    slug: "velocalls-team",
     role: "Product & Engineering",
+    bio: "The VeloCalls team brings together experts in call tracking, telephony, and performance marketing. We build tools that help businesses optimize their inbound call campaigns with intelligent routing, real-time analytics, and seamless carrier management.",
   },
   "alex-morgan": {
     name: "Alex Morgan",
+    slug: "alex-morgan",
     role: "Head of Product",
+    bio: "Alex leads product strategy at VeloCalls with over a decade of experience in SaaS and performance marketing platforms. Passionate about building intuitive tools that turn complex telephony workflows into simple, measurable outcomes for marketers and agencies.",
   },
   "jordan-lee": {
     name: "Jordan Lee",
+    slug: "jordan-lee",
     role: "Engineering Lead",
+    bio: "Jordan oversees the engineering team at VeloCalls, architecting scalable systems for real-time call routing, carrier integration, and analytics. With deep expertise in distributed systems and VoIP, Jordan ensures VeloCalls handles millions of calls reliably.",
   },
 };
 
@@ -72,6 +81,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     category: data.category || "General",
     tags: data.tags || [],
     author: AUTHORS[authorKey] || AUTHORS["velocalls-team"],
+    authorSlug: authorKey,
     readTime: stats.text,
     coverImage: data.coverImage,
     content,
@@ -96,6 +106,27 @@ export function getAllCategories(): string[] {
   const posts = getAllPosts();
   const cats = new Set(posts.map((p) => p.category));
   return Array.from(cats).sort();
+}
+
+export function getPostsByAuthor(authorSlug: string): BlogPost[] {
+  return getAllPosts().filter((p) => p.authorSlug === authorSlug);
+}
+
+export function getAllAuthorSlugs(): string[] {
+  return Object.keys(AUTHORS);
+}
+
+export function getAuthorBySlug(slug: string): Author | undefined {
+  return AUTHORS[slug];
+}
+
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 export function getRelatedPosts(

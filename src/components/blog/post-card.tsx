@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";
+import { SearchHighlight } from "@/components/blog/search-highlight";
 
-export function PostCard({ post }: { post: BlogPost }) {
+export function PostCard({
+  post,
+  searchQuery,
+}: {
+  post: BlogPost;
+  searchQuery?: string;
+}) {
   return (
     <article className="glass-card p-8 sm:p-10 group">
       <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -19,9 +26,21 @@ export function PostCard({ post }: { post: BlogPost }) {
         <span className="text-xs text-muted">{post.readTime}</span>
       </div>
       <h2 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors sm:text-2xl">
-        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+        <Link href={`/blog/${post.slug}`}>
+          {searchQuery ? (
+            <SearchHighlight text={post.title} query={searchQuery} />
+          ) : (
+            post.title
+          )}
+        </Link>
       </h2>
-      <p className="text-muted leading-relaxed mb-4">{post.excerpt}</p>
+      <p className="text-muted leading-relaxed mb-4">
+        {searchQuery ? (
+          <SearchHighlight text={post.excerpt} query={searchQuery} />
+        ) : (
+          post.excerpt
+        )}
+      </p>
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted">{post.author.name}</span>
         <Link

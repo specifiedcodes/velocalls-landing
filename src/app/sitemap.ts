@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getAllAuthorSlugs } from "@/lib/blog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = "https://velocalls.com";
@@ -11,6 +11,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.7,
   }));
+
+  const authorEntries: MetadataRoute.Sitemap = getAllAuthorSlugs().map(
+    (slug) => ({
+      url: `${siteUrl}/blog/author/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    })
+  );
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: siteUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
@@ -24,5 +33,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/security`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
 
-  return [...staticPages, ...blogEntries];
+  return [...staticPages, ...blogEntries, ...authorEntries];
 }

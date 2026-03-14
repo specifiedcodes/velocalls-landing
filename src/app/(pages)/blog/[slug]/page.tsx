@@ -11,6 +11,9 @@ import { useMDXComponents } from "@/components/blog/mdx-components";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { PostCard } from "@/components/blog/post-card";
+import { NewsletterForm } from "@/components/blog/newsletter-form";
+import { AuthorCard } from "@/components/blog/author-card";
+import { BlogAnalytics } from "@/components/blog/blog-analytics";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -80,6 +83,9 @@ export default async function BlogPostPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* Blog analytics: scroll depth, reading time, CTA clicks */}
+      <BlogAnalytics slug={post.slug} category={post.category} />
+
       {/* Hero */}
       <section className="page-hero py-20 sm:py-28">
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
@@ -110,10 +116,7 @@ export default async function BlogPostPage({
             {post.excerpt}
           </p>
           <div className="mt-6 flex items-center justify-center gap-3">
-            <div className="text-sm">
-              <p className="font-medium text-white">{post.author.name}</p>
-              <p className="text-white/50">{post.author.role}</p>
-            </div>
+            <AuthorCard author={post.author} />
           </div>
         </div>
       </section>
@@ -167,9 +170,25 @@ export default async function BlogPostPage({
               Set up intelligent call tracking and routing in minutes. No credit
               card required.
             </p>
-            <a href="https://dashboard.velocalls.com" className="btn-primary">
+            <a
+              href="https://dashboard.velocalls.com"
+              className="btn-primary"
+              data-analytics-cta="get-started"
+            >
               Get Started Free
             </a>
+          </div>
+
+          {/* Newsletter Signup */}
+          <div className="mt-12 glass-card p-8 sm:p-10 text-center">
+            <h3 className="text-xl font-bold text-foreground mb-3">
+              Stay Updated
+            </h3>
+            <p className="text-muted mb-6 max-w-md mx-auto">
+              Get the latest articles and industry insights delivered to your
+              inbox.
+            </p>
+            <NewsletterForm />
           </div>
         </div>
       </section>

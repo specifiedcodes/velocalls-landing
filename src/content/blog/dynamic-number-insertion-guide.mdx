@@ -1,0 +1,224 @@
+---
+title: "Dynamic Number Insertion (DNI) Guide: Setup, Sizing, and Troubleshooting"
+excerpt: "A complete technical guide to Dynamic Number Insertion for call tracking. Covers how DNI works, number pool sizing, setup instructions, SEO considerations, troubleshooting, and advanced configurations."
+date: "2026-04-11"
+category: "Tutorial"
+tags: ["DNI", "dynamic number insertion", "tutorial", "call tracking", "attribution"]
+author: "velocalls-team"
+---
+
+# Dynamic Number Insertion (DNI) Guide: Setup, Sizing, and Troubleshooting
+
+Dynamic Number Insertion (DNI) is the technology that connects website visits to phone calls. Without DNI, you know someone called your business, but you do not know which website visit, traffic source, or search keyword led to that call. With DNI, every phone call from your website is attributed to the visitor session that generated it, giving you the same level of attribution for phone calls that you have for form submissions and online purchases.
+
+This guide covers how DNI works, how to set it up, how many numbers you need, common issues and their fixes, and advanced configurations for complex scenarios.
+
+## What Is Dynamic Number Insertion?
+
+Dynamic Number Insertion is a call tracking technique where a JavaScript snippet on your website dynamically replaces your business phone number with a unique tracking number for each visitor. The tracking number is drawn from a pool of numbers managed by your call tracking platform. When the visitor calls the displayed number, the platform attributes the call to that specific web session, including the traffic source, landing page, referring URL, and (with Google Ads integration) the search keyword.
+
+### The Problem DNI Solves
+
+Imagine this scenario: your website displays your business phone number (555-123-4567) on every page. You run Google Ads, invest in SEO, post on social media, and send email campaigns. All of these channels drive visitors to your website, and some of those visitors call you. Without DNI, when the phone rings at 555-123-4567, you have no way to know whether the caller came from a Google Ad, an organic search, a Facebook post, or a direct visit.
+
+DNI solves this by showing different phone numbers to visitors from different sources. A visitor from Google Ads sees (555) 200-0001. A visitor from organic search sees (555) 200-0002. A visitor from Facebook sees (555) 200-0003. When any of these numbers ring, you know exactly where the caller came from.
+
+## How DNI Works
+
+### The JavaScript Snippet
+
+A small JavaScript snippet is added to your website, typically in the header or footer so it loads on every page. When a visitor loads a page, the snippet:
+
+1. **Detects the traffic source** by reading UTM parameters, referrer data, and Google Ads click IDs (gclid).
+2. **Requests a tracking number** from the call tracking platform's API, passing the session data.
+3. **Replaces the phone number** displayed on the page with the assigned tracking number.
+4. **Maintains the assignment** for the duration of the visitor's session, so they see the same tracking number across all pages.
+
+The number replacement happens in milliseconds, before the visitor has time to notice. The snippet targets specific elements on your page (identified by CSS class, data attribute, or phone number pattern) and swaps the displayed text.
+
+### Session Tracking
+
+DNI assigns a tracking number to a visitor session, not a single page view. If a visitor browses five pages on your site and then calls, the call is attributed to the original traffic source that brought them to the site, regardless of which page they called from.
+
+Session duration is typically configured between 20 and 60 minutes. If a visitor leaves your site and returns within the session window, they see the same tracking number. After the session expires, the number returns to the pool for reassignment.
+
+### Number Pool Management
+
+The call tracking platform maintains a pool of phone numbers dedicated to DNI. Numbers are assigned to active sessions and released back to the pool when sessions expire. The pool must be large enough to handle the maximum number of concurrent visitors who might call, with some buffer for safety.
+
+## Types of DNI
+
+### Source-Based DNI
+
+The simplest form. Assign one tracking number per traffic source category: one for paid search, one for organic search, one for social media, one for direct visits, and one for email campaigns. This requires only a handful of numbers but provides only source-level attribution.
+
+**Pros:** Low number count, simple setup, low cost.
+**Cons:** Cannot distinguish between individual campaigns, keywords, or sessions within a source.
+
+### Session-Based DNI
+
+Assign a unique tracking number to each concurrent visitor session. This provides full session-level attribution: traffic source, landing page, referring URL, pages viewed, and time on site. Requires a larger number pool sized to concurrent visitor volume.
+
+**Pros:** Full session-level attribution, connects the entire web journey to the phone call.
+**Cons:** Requires more numbers, higher cost, more complex pool management.
+
+### Keyword-Level DNI
+
+The most granular form. By integrating with Google Ads (through gclid parameter tracking), keyword-level DNI attributes phone calls to the specific search keyword that triggered the ad click. This requires session-based DNI as a foundation plus Google Ads integration.
+
+**Pros:** Enables bid optimization at the keyword level, the highest-value attribution for paid search.
+**Cons:** Requires session-based pool sizing, Google Ads integration, and sufficient call volume per keyword for statistical significance.
+
+## Step-by-Step: Setting Up DNI with VeloCalls
+
+### Step 1: Create a Number Pool
+
+In your VeloCalls dashboard, navigate to Phone Numbers and create a new DNI number pool. Select the area code(s) for your tracking numbers. Choose local numbers to match your business location or toll-free numbers for national campaigns.
+
+### Step 2: Size Your Pool
+
+Determine how many numbers you need based on your concurrent website traffic (see the sizing section below). Start with a conservative estimate and adjust based on actual utilization data.
+
+### Step 3: Install the JavaScript Snippet
+
+Copy the VeloCalls DNI snippet from your dashboard and add it to your website. The snippet should load on every page. For most websites, add it before the closing `</body>` tag or in your site-wide header include.
+
+The snippet looks like this (simplified):
+
+```html
+<script src="https://cdn.velocalls.com/dni.js"
+  data-pool-id="your-pool-id"
+  data-target=".phone-number"
+  async>
+</script>
+```
+
+### Step 4: Configure Number Targeting
+
+The snippet needs to know which elements on your page contain your phone number. Configure targeting using one of these methods:
+
+- **CSS class:** Add a class like `phone-number` to elements displaying your phone number.
+- **Data attribute:** Add `data-velocalls-number` to phone number elements.
+- **Auto-detection:** The snippet can scan for phone number patterns on the page and replace them automatically.
+
+### Step 5: Configure Google Ads Integration (Optional)
+
+For keyword-level attribution, connect your Google Ads account in VeloCalls settings. Enable auto-tagging in Google Ads so that gclid parameters are appended to ad click URLs. The DNI snippet reads the gclid and passes it to VeloCalls for keyword-level call attribution.
+
+### Step 6: Test
+
+Visit your website from different sources (paid search, organic, direct, social) and verify that different tracking numbers appear. Place test calls and confirm they appear in your VeloCalls dashboard with correct source attribution.
+
+## Number Pool Sizing: How Many Numbers Do You Need?
+
+Pool sizing is the most common source of DNI problems. Too few numbers means some visitors see your default (untracked) number, losing attribution. Too many numbers means you are paying for numbers that sit idle.
+
+### The Formula
+
+The number of tracking numbers you need depends on:
+
+- **Peak concurrent visitors:** The maximum number of visitors on your site at the same time who might make a call. This is not total daily visitors -- it is the simultaneous peak.
+- **Session duration:** How long a number stays assigned to a visitor session. Longer sessions require more numbers.
+- **Safety buffer:** A margin to handle traffic spikes.
+
+**Rule of thumb:** Start with a pool equal to 75 to 100 percent of your peak concurrent visitors. For most small to mid-sized websites, this is 5 to 25 numbers. For high-traffic sites, it may be 50 to 200 or more.
+
+### Sizing by Traffic Volume
+
+| Daily Unique Visitors | Estimated Peak Concurrent | Recommended Pool Size |
+|---|---|---|
+| Under 500 | 5-15 | 8-20 |
+| 500 - 2,000 | 15-50 | 20-60 |
+| 2,000 - 10,000 | 50-150 | 60-175 |
+| 10,000 - 50,000 | 150-500 | 175-550 |
+| Over 50,000 | 500+ | Custom sizing required |
+
+### Monitoring Utilization
+
+After setup, monitor your pool utilization in the VeloCalls dashboard. If utilization regularly exceeds 80 percent, add more numbers. If utilization stays below 30 percent, you may be able to reduce your pool size to save costs.
+
+## Troubleshooting Common DNI Issues
+
+### Phone Number Not Swapping
+
+**Symptoms:** Visitors see your default business number instead of a tracking number.
+
+**Causes and fixes:**
+- **Snippet not loading.** Check your browser's developer console for JavaScript errors. Verify the snippet URL is correct and not blocked by ad blockers or content security policies.
+- **Targeting mismatch.** The CSS class or data attribute in the snippet configuration does not match your page markup. Inspect the phone number element and verify the selector matches.
+- **Pool exhausted.** All numbers in the pool are assigned to active sessions. Add more numbers to the pool.
+- **Caching.** A CDN or page cache is serving a version of the page that predates the snippet installation. Clear your cache.
+
+### Wrong Attribution
+
+**Symptoms:** Calls are attributed to the wrong source (e.g., organic calls showing as direct).
+
+**Causes and fixes:**
+- **UTM parameters stripped.** Some redirects, link shorteners, or tracking systems strip UTM parameters before the visitor reaches your site. Test the full click path from each marketing channel.
+- **Session cookie issues.** The DNI session cookie may be blocked or cleared by browser privacy settings. Ensure the snippet uses first-party cookies rather than third-party cookies.
+- **Google Ads auto-tagging disabled.** For keyword-level attribution, auto-tagging must be enabled in Google Ads settings. Verify the gclid parameter appears in your landing page URLs.
+
+### Number Displayed Briefly Then Reverts
+
+**Symptoms:** The tracking number appears for a moment, then the page reverts to the default number.
+
+**Causes and fixes:**
+- **Competing scripts.** Another JavaScript on the page is modifying the same element after the DNI snippet. Check for conflicts with A/B testing tools, chat widgets, or other scripts that manipulate the DOM.
+- **SPA re-rendering.** Single-page applications re-render content on navigation, which can overwrite DNI replacements. See the advanced SPA section below.
+
+### Phone Number Appears as Link But Does Not Call
+
+**Symptoms:** On mobile, tapping the tracking number does not initiate a call.
+
+**Causes and fixes:**
+- **Missing tel: link.** The DNI snippet replaces the displayed text but may not update the `href` attribute of a phone link. Ensure the snippet is configured to update both the display text and the tel: link.
+
+## DNI and SEO: Will It Affect Your Local SEO?
+
+This is one of the most common concerns about DNI, and the answer is nuanced.
+
+### NAP Consistency
+
+NAP (Name, Address, Phone number) consistency across the web is a local SEO ranking factor. Search engines expect your business phone number to be consistent across your website, Google Business Profile, directories, and citations. DNI dynamically changes the number on your website, which could theoretically cause inconsistency.
+
+### Why DNI Typically Does Not Hurt SEO
+
+**Search engine crawlers see your default number.** DNI operates through JavaScript. When Google's crawler renders your page, it typically sees your default business number (either because the snippet is configured to show the default to bots, or because the crawler does not execute the JavaScript in the same way a browser does). Your NAP remains consistent for SEO purposes.
+
+**Google understands call tracking.** Google is well aware of DNI technology and does not penalize sites for using it. Google Ads itself uses a form of DNI (Google forwarding numbers) in its own call tracking product.
+
+### Best Practice: Use data-nosnippet
+
+To be extra cautious, you can wrap your phone number element with a `data-nosnippet` attribute to prevent Google from indexing the dynamically replaced number. The default number remains in your structured data and meta tags for NAP consistency.
+
+### Structured Data
+
+Maintain your primary business phone number in your website's structured data (Schema.org LocalBusiness markup), even if DNI changes the visible number. This ensures search engines have a consistent phone number for your business listing.
+
+## Advanced DNI: Multi-Domain, SPA Support, and Offline Conversion Tracking
+
+### Multi-Domain DNI
+
+If your business operates multiple websites (e.g., a corporate site and location-specific microsites), configure separate DNI pools for each domain. Session tracking works per-domain, and each pool should be sized independently based on that site's traffic.
+
+### Single-Page Application (SPA) Support
+
+SPAs (React, Vue, Angular) re-render page content without full page loads. Standard DNI snippets that run on page load may not re-apply after SPA navigation events. To handle this:
+
+- Use a DNI snippet that provides a JavaScript API for manual triggering after route changes
+- Call the re-scan function in your SPA's route change handler
+- VeloCalls' DNI snippet supports a `velocalls.rescan()` method for this purpose
+
+### Offline Conversion Tracking
+
+DNI enables offline conversion tracking by connecting online sessions to phone calls, and phone calls to downstream conversions (purchases, appointments, signed contracts). When a call converts, you can feed that conversion data back to Google Ads as an offline conversion, enabling Google's bidding algorithms to optimize for actual revenue rather than just calls.
+
+For more context on how DNI fits into the broader call tracking ecosystem, read our guides on [what is call tracking](/blog/what-is-call-tracking) and [how to set up call tracking](/blog/how-to-set-up-call-tracking).
+
+## Conclusion
+
+Dynamic Number Insertion is the bridge between your website analytics and your phone calls. Without it, calls from your website are a black box. With it, every call is attributed to a traffic source, campaign, and potentially a search keyword, giving you the data needed to optimize your marketing spend.
+
+The keys to a successful DNI implementation are proper pool sizing, correct snippet installation, and ongoing utilization monitoring. Start with a conservatively sized pool, test thoroughly across all traffic sources, and adjust based on real data.
+
+VeloCalls includes DNI as a core feature with visual pool management, utilization dashboards, and SPA support. Start your [14-day free trial](/register) to set up DNI on your website in minutes -- no credit card required.
